@@ -117,7 +117,7 @@ const getFileList = () => {
         console.log("waiting", wait);
         await sleep(wait);
       } catch (error) {
-        const sleeping = Math.random() * 5 * 1000 * 60 + 1000 * 60;
+        const sleeping = Math.random() * 1000 * 60 + 1000 * 60 * 7;
         console.log("sleeping", sleeping);
         console.log("fatal error", error.message);
         await sleep(sleeping);

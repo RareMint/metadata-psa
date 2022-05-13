@@ -1,0 +1,17 @@
+{
+  "name": "metadata-psa",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:ruge0326/metadata-psa.git",
+  "author": "RuGe <70239531+ruge0326@users.noreply.github.com>",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "jsdom": "^19.0.0",
+    "lodash": "^4.17.21",
+    "puppeteer": "^14.0.0",
+    "puppeteer-extra": "^3.2.3",
+    "puppeteer-extra-plugin-stealth": "^2.9.0",
+    "read-excel-file": "^5.2.28"
+  }
+}

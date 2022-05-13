@@ -104,3 +104,7 @@ dist
 .tern-port
 
 *.xslx
+
+examples/index.js
+
+metadata/psa/**/*

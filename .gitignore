@@ -107,4 +107,6 @@ dist
 
 examples/index.js
 
-metadata/psa/**/*
+# metadata/psa/**/*
+
+.DS_Store

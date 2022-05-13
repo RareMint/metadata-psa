@@ -52,6 +52,26 @@ const getBrackettIds = () => {
   });
 };
 
+const writeToJsonBreckett = async (id, data) => {
+  const metadata = {
+    description: "",
+    attributes: data.map((row) => {
+      return {
+        trait_type: row[0],
+        value: row[1],
+      };
+    }),
+  };
+  metadata.attributes.push({
+    trait_type: "Edition",
+    value: 1,
+  });
+  fs.writeFileSync(
+    `./metadata/breckett/${id}.json`,
+    JSON.stringify(metadata, null, 2)
+  );
+};
+
 (async () => {
   const files = await getFileList();
   console.log("files", files);
@@ -60,18 +80,30 @@ const getBrackettIds = () => {
   const difference = _.difference(ids, files);
   console.log("difference", difference);
 
-  //   const html = ``;
-  //   const dom = new JSDOM(html);
-  //   const content = dom.window.document.querySelector("div.main_content_area");
-  //   const id = content.querySelector("h2")?.textContent?.split(":")[1];
-  //   console.log("id", id);
-  //   const table = dom.window.document.querySelector("table");
-  //   const tds = Array.from(table.querySelectorAll("table tr"));
-  //   const data = tds.map((td) =>
-  //     td.textContent
-  //       .trim()
-  //       .split(":")
-  //       .map((v) => v.trim())
-  //   );
-  //   console.log("data", data);
+  console.log("Missing files", ids);
+  for (let i = 0; i < ids.length; ++i) {
+    try {
+      const file = ids[i];
+      const directoryPath = path.join(__dirname, file + ".html");
+      const html = fs.readFileSync(directoryPath);
+      const dom = new JSDOM(html);
+      const content = dom.window.document.querySelector(
+        "div.main_content_area"
+      );
+      const id = content.querySelector("h2")?.textContent?.split(":")[1];
+      console.log("id", id);
+      const table = dom.window.document.querySelector("table");
+      const tds = Array.from(table.querySelectorAll("table tr"));
+      const data = tds.map((td) =>
+        td.textContent
+          .trim()
+          .split(":")
+          .map((v) => v.trim())
+      );
+      console.log("data", data);
+      await writeToJsonBreckett(id, data);
+    } catch (error) {
+      console.log("fatal error", error.message);
+    }
+  }
 })();

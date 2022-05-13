@@ -22,10 +22,6 @@ const getPokemonData = async (id) => {
     waitUntil: "load",
     timeout: 10000,
   });
-
-  const wait = (Math.random() * 2 + Math.random() * 2 + 4) * 1000;
-  console.log("wait", wait);
-  await sleep(wait);
   const data = await page.evaluate(
     () => {
       const tds = Array.from(document.querySelectorAll("table tr"));
@@ -111,12 +107,15 @@ const getFileList = () => {
       try {
         const id = ids[i];
         const { key, data } = await getPokemonData(id);
-        if (data.length > 0) {
-          console.log("writing", id);
-          await writeToJsonPSA(key, data);
+        if (data.length < 1) {
+          throw new Error("No data :(");
         }
+        console.log("writing", id);
+        await writeToJsonPSA(key, data);
         ++i;
-        throw new Error("No data :(");
+        const wait = Math.random() * 2000 + Math.random() * 2000 + 1000 * 60;
+        console.log("waiting", wait);
+        await sleep(wait);
       } catch (error) {
         const sleeping = Math.random() * 5 * 1000 * 60 + 1000 * 60;
         console.log("sleeping", sleeping);

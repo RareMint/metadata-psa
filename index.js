@@ -111,9 +111,12 @@ const getFileList = () => {
       try {
         const id = ids[i];
         const { key, data } = await getPokemonData(id);
-        console.log("writing", id);
-        await writeToJsonPSA(key, data);
+        if (data.length > 0) {
+          console.log("writing", id);
+          await writeToJsonPSA(key, data);
+        }
         ++i;
+        throw new Error("No data :(");
       } catch (error) {
         const sleeping = Math.random() * 5 * 1000 * 60 + 1000 * 60;
         console.log("sleeping", sleeping);

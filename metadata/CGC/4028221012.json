@@ -1,0 +1,41 @@
+{
+  "description": "",
+  "attributes": [
+    {
+      "trait_type": "Cert #",
+      "value": "4028221012"
+    },
+    {
+      "trait_type": "Card Name",
+      "value": "Galarian Articuno V"
+    },
+    {
+      "trait_type": "Game",
+      "value": "Pokémon"
+    },
+    {
+      "trait_type": "Year",
+      "value": "2021"
+    },
+    {
+      "trait_type": "Language",
+      "value": "English"
+    },
+    {
+      "trait_type": "Card Set",
+      "value": "Chilling Reign"
+    },
+    {
+      "trait_type": "Card Number",
+      "value": "169/198"
+    },
+    {
+      "trait_type": "Grade",
+      "value": "9.5"
+    },
+    {
+      "trait_type": "Edition",
+      "value": 1
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+"use strict";angular.module("CCG.Orderform",["MxGroup.Shared","CCG.Shared"]);angular.module("CCG.PopReport",[]);angular.module("CCG.Registry",["MxGroup.Shared","CCG.Shared"])

@@ -93,19 +93,15 @@ const getFileList = () => {
 
 (async () => {
   try {
-    // const ids = await getPSAIds();
-    // const psaIds = [ids[0], ids[1], ids[2], ids[3]];
     const psaIds = await getPSAIds();
     const jsonFiles = await getFileList();
     const files = jsonFiles.map((f) => f.split(".")[0]);
-    // console.log("files", files);
-    // console.log("psaIds", psaIds);
-    const ids = _.difference(psaIds, files);
+    const difference = _.difference(psaIds, files);
     let i = 0;
-    console.log("Missing files", ids);
-    while (i < ids.length) {
+    console.log("Missing files", difference);
+    while (i < difference.length) {
       try {
-        const id = ids[i];
+        const id = difference[i];
         const { key, data } = await getPokemonData(id);
         if (data.length < 1) {
           throw new Error("No data :(");

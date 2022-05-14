@@ -1,0 +1,1216 @@
+/* Minification failed. Returning unminified contents.
+(1165,50-51): run-time error JS1195: Expected expression: .
+(1166,8-9): run-time error JS1002: Syntax error: }
+(1169,32-33): run-time error JS1004: Expected ';': {
+(1184,10-11): run-time error JS1195: Expected expression: )
+(1184,32-33): run-time error JS1004: Expected ';': {
+(1186,10-11): run-time error JS1195: Expected expression: )
+(1189,31-32): run-time error JS1195: Expected expression: )
+(1189,33-34): run-time error JS1004: Expected ';': {
+(1200,6-7): run-time error JS1002: Syntax error: }
+ */
+"use strict";
+angular.module("CCG.AddCollectible", ["MxGroup.Shared", "CCG.Shared"]);;
+"use strict";
+angular.module("CCG.AddCollectible")
+	.directive("ccgAddCollectibleModal", [
+		"$window", "urlService",
+		function($window, urlService) {
+			return {
+				scope: true,
+				controllerAs: "collectibleMgr",
+				templateUrl	: urlService.templateUrl("/registry/manage/collectibles/templates/add-collectible-modal/"),
+				controller: [
+					"addCollectibleService", "addCollectibleToSetService", "$rootScope", "$scope",
+					function(addCollectibleService, addCollectibleToSetService, $rootScope, $scope) {
+						var $ctrl = this;
+					
+						$ctrl.openCollectibleLookup = function(e, options) {
+							options = options || {};
+
+							if(CCG.user.IsLoggedIn) {
+								$ctrl.grader        = options.grader || $ctrl.grader;
+								$ctrl.certNumber    = options.certNumber;
+								$ctrl.preferredSlot = options.slot;
+								$ctrl.fromCertLookup = options.fromCertLookup;
+								changeViewMode("lookup");
+							} else {
+								$rootScope.$broadcast("addCollectible.loginOrJoin");
+							}
+						};
+						$ctrl.openAddCollectibleImages = function(e, options) {
+							if(!options) {
+								console.error("openAddcollectibleImages: No options provided.")
+								return;
+							}
+
+							addCollectibleService
+								.checkCollectibleDetails(options.collectibleID)
+								.then(function(results) {
+									$ctrl.collectibleDetailsResults = {
+										CollectibleSummary: options.summary,
+										PreferredSlot: options.slot,
+										Results: results,
+									};
+									changeViewMode("images");
+								});
+						};
+						$ctrl.openEditSlot = function(e, slot) {
+							$ctrl.preferredSlot = slot;
+							addCollectibleToSetService
+								.fetchAvailableCollectibles(slot)
+								.then(function(results) {
+									$ctrl.availableCollectibles = results;
+									changeViewMode("slot");
+								}, handleError);
+						};
+						$ctrl.selectSlot = function(e, grader, slot) {
+							// If there are collectibles that can fit in the slot, show edit slot
+							// Otherwise show lookup collectible, within the context of a slot.
+							if(slot.hasCollectibles || slot.isFilled)
+								$ctrl.openEditSlot(e, slot);
+							else $ctrl.openCollectibleLookup(e, { grader: grader, slot: slot });
+						};
+						$ctrl.openSelectExistingSets = function(e, collectibleID, clearPreferredSlot) {
+							if(clearPreferredSlot)
+								$ctrl.preferredSlot = null;
+
+							if($ctrl.preferredSlot) {
+								validateSlot(collectibleID);
+							} else {
+								addCollectibleToSetService
+									.fetchAvailableSets(collectibleID, 0)
+									.then(function(results) {
+										if(results && results.EnableAddToSet) {
+											$ctrl.availableSets = results;
+											changeViewMode("existing-sets");
+										} else {
+											$ctrl.openSelectSetType(e, collectibleID);
+										}
+									}, handleError);
+							}
+						};
+						$ctrl.openSelectSetType = function(e, collectibleID, clearPreferredSlot) {
+							if(clearPreferredSlot)
+								$ctrl.preferredSlot = null;
+
+							if($ctrl.preferredSlot) {
+								validateSlot(collectibleID);
+							} else {
+								addCollectibleToSetService
+									.fetchAvailableSetTypes(collectibleID)
+									.then(function(results) {
+										$ctrl.availableSetTypes = results;
+										changeViewMode("set-type");
+									}, handleError);
+							}
+						};
+						$ctrl.openSelectSet = function(e, collectibleID, competitiveSetTypeID, fetchAllSets) {
+							addCollectibleToSetService
+								.fetchAvailableSets(collectibleID, competitiveSetTypeID, fetchAllSets)
+								.then(function(results) {
+									$ctrl.availableSets = results;
+									$ctrl.selectSlot = fetchAllSets;
+									changeViewMode("competitive-set");
+								}, handleError);
+						};
+						$ctrl.openConfirmSlot = function(slotResults) {
+							$ctrl.slotResults = slotResults;
+							changeViewMode("confirm-slot");
+						};
+						$ctrl.openRequestNewSetType = function(e, collectibleSummary) {
+							$ctrl.requestNewSetTypeParameters = { collectibleSummary: collectibleSummary };
+							changeViewMode("request-new-set-type");
+						};
+						$ctrl.close = function() {
+							$ctrl.grader        = null;
+							$ctrl.certNumber    = null;
+							changeViewMode();
+						};
+
+						// == Helpers =================================================================
+						// ============================================================================
+						function changeViewMode(mode) {
+							$ctrl.viewMode	= mode;
+							$ctrl.visible = (mode != null);
+							
+							//need this for add collectible from submission tracking
+							if(mode == "lookup" && $ctrl.certNumber && !$ctrl.fromCertLookup)
+								$scope.$apply();
+
+							$rootScope.$broadcast("ccgModal.resetScroll");
+						}
+						function validateSlot(collectibleID) {
+							addCollectibleToSetService
+								.validateSlot(collectibleID, $ctrl.preferredSlot)
+								.then(function(results) {
+									if(results.IsValidForSlot) {
+										addToPreferredSlot(results).then($ctrl.close);
+									} else {
+										$ctrl.openConfirmSlot(results);
+									}
+								})
+								.catch(handleError);
+						}
+						function addToPreferredSlot(results) {
+							return addCollectibleToSetService
+								.addToSet(results.CollectibleSummary.CollectibleID, $ctrl.preferredSlot)
+								.catch(handleError);
+						}
+						function handleError(err) {
+							console.log('Error thrown from add-collectible-modal: ', err)
+						}
+					}
+				],
+				link: function(scope, element, attrs, ctrl) {
+					var grader = attrs.grader;
+
+					if(grader)
+						ctrl.grader = grader;
+
+					scope.$on("addCollectible.openLookup",           ctrl.openCollectibleLookup);
+					scope.$on("addCollectible.addCollectibleImages", ctrl.openAddCollectibleImages);
+					scope.$on("addCollectible.slotSelected", 		 ctrl.selectSlot);
+					scope.$on("addCollectible.selectExistingSets",   ctrl.openSelectExistingSets);
+					scope.$on("addCollectible.selectSetType",		 ctrl.openSelectSetType);
+					scope.$on("addCollectible.setTypeSelected", 	 ctrl.openSelectSet);
+					scope.$on("addCollectible.requestNewSetType", 	 ctrl.openRequestNewSetType);
+					scope.$on("addCollectible.close", 				 ctrl.close);
+
+					if($window.location.search) {
+						var params        = (new URI()).search(true);
+						var collectible   = params["add"];
+						var certNumber    = params["addCert"];
+						var existingSets  = params["existingsets"];
+
+						if((collectible || certNumber) && CCG.user.UserType === "Dealer")
+							return;
+
+						if(collectible && collectible == "0") {
+							ctrl.openCollectibleLookup();
+						} else if(collectible && existingSets) {
+							ctrl.openSelectExistingSets(null, collectible);
+						} else if(collectible) {
+							ctrl.openSelectSetType(null, collectible, false);
+						} else if(certNumber) {
+							ctrl.openCollectibleLookup(null, {
+								grader: grader,
+								certNumber: certNumber
+							});
+						}
+					}
+				}
+			};
+		}
+	]);
+;
+"use strict";
+angular.module("CCG.AddCollectible")
+	.directive("ccgCollectibleImage", [
+		function() {
+			return {
+				scope: {
+					collectibleID: "=collectibleId",
+					isOwner: "=",
+					isObverse: "=",
+					imageHref: "=",
+					thumbHref: "=",
+					showAddDefaultImage: "=showAddDefaultImage",
+					showDeleteImageAtTop: "=",
+					showSwapImages: "=showSwapImages",
+					competitiveslotID: "=competitiveSlotId",
+					hasCollectible: "=",
+					caption: "@",
+					noGallery: "@",
+				},
+				templateUrl: "/resources/ccg-shared/scripts/ccg.add-collectible/collectible-image/collectible-image-template.html",
+				controllerAs: "image",
+				controller: [
+					"$scope", "$rootScope", "$element", "$filter", "addCollectibleService", "imageResizer", "notifier",
+					function($scope, $rootScope, $element, $filter, addCollectibleService, imageResizer, notifier) {
+						var $ctrl = this;
+
+						$ctrl.scopeID = $scope.$id;
+						$ctrl.side = $scope.isObverse ? "obv" : "rev";
+						$ctrl.menuListener = "edit-image-" + $ctrl.side + "-" + $scope.collectibleId + "-" + $ctrl.scopeID;
+						$ctrl.hasImage = !!$scope.imageHref;
+
+						$ctrl.handleClick = function(e) {
+							if(!$scope.noGallery && (!$scope.isOwner || $ctrl.openGallery)) {
+								$ctrl.openGallery = false;
+								this.closeMenu();
+								return;
+							}
+
+							if(!$ctrl.ignoreParentClick) {
+								//if we're opening the menu, and we don't have an image, go straight to pick an image
+								//otherwise, reset the menu back to start
+								$ctrl.showEditImage = !$ctrl.hasImage;
+								$ctrl.showConfirmDelete = false;
+
+								//if we don't have an image, automatically open the file picker;
+								if($ctrl.showEditImage && !$scope.showAddDefaultImage) {
+									openNewImageSelect();
+								} else {
+									$rootScope.$broadcast("mxToggle.open-menus", "remove");
+									$rootScope.$broadcast("mxToggle." + $ctrl.menuListener, "add");
+								}
+
+							} else {
+								$ctrl.ignoreParentClick = false;
+							}
+
+							e.preventDefault();
+							e.stopPropagation();
+						};
+						$ctrl.deleteImage = function() {
+							$ctrl.ignoreParentClick = true;
+
+							$ctrl.closeMenu();
+							$ctrl.imageElement.toggleClass("loading");
+							addCollectibleService.deleteCollectibleImage($scope.collectibleID, $ctrl.side)
+								.then(function() {
+									$ctrl.refresh(null, null);
+									$ctrl.imageUploaded = false;
+									$ctrl.showConfirmDelete = false;
+								})
+								.finally(function() {
+									$ctrl.imageElement.toggleClass("loading");
+								});
+						};
+						$ctrl.onImageSelected = function(files) {
+							if(!files || files.length == 0) {
+								return;
+							}
+
+							var selectedFile = files[0];
+							if(!selectedFile.type.match(/image.*/)) {
+								handleError($filter("localize")("Error.UploadError"));
+								return;
+							}
+
+							$ctrl.imageElement.toggleClass("loading");
+
+							imageResizer.resize(selectedFile, this.finishUpload);
+						};
+						$ctrl.finishUpload = function(file, orientation) {
+							if(!file) {
+								handleError($filter("localize")("Error.UploadError"));
+								return;
+							}
+							if(file.size > 10000000) {
+								handleError($filter("localize")("Error.UploadTooLarge"));
+								return;
+							}
+
+							$ctrl.closeMenu();
+
+							addCollectibleService.updateCollectibleImage($scope.collectibleID, $ctrl.side, file, orientation)
+								.success(function(results, status, headers, config) {
+									if(results.Success) {
+										$ctrl.refresh(results.FullUrl, results.ThumbnailUrl);
+									} else if(results.OverSizeLimit)
+										handleError($filter("localize")("Error.OverSizeLimit"));
+									else handleError($filter("localize")("Error.UploadError"));
+								})
+								.catch(handleError)
+								.finally(function() {
+									$ctrl.imageElement.toggleClass("loading");
+
+									// Disable file element before updating value,
+									// so the change event doesn't fire again in IE
+									$ctrl.imageElement.find(":file")
+										.prop("disabled", true)
+										.val(null)
+										.prop("disabled", false);
+								});
+						};
+						$ctrl.refresh = function(fullUrl, thumbUrl) {
+							$scope.imageHref = fullUrl;
+							$scope.thumbHref = thumbUrl;
+							$ctrl.hasImage = !!$scope.imageHref;
+							
+							if($ctrl.imageElement) {
+								$ctrl.imageElement.attr({
+									"full-url": $ctrl.hasImage ? $scope.imageHref : null
+								});
+							}
+
+							$rootScope.$broadcast("ccgBgImage.refresh");
+						};
+						$ctrl.imageHolderAdded = function() {
+							$ctrl.imageElement = $element.find("[ccg-bg-image]");
+							$ctrl.imageElement.attr({
+								"full-url": $ctrl.hasImage ? $scope.imageHref : null
+							});
+						};
+						$ctrl.closeMenu = function() {
+							$ctrl.showEditImage = false;
+							$ctrl.showConfirmDelete = false;
+							if($ctrl.menuListener)
+								$rootScope.$broadcast("mxToggle." + $ctrl.menuListener, "remove");
+						};
+						$ctrl.replaceImage = function() {
+							if(!$scope.showAddDefaultImage) {
+								openNewImageSelect();
+							} else {
+								$ctrl.showEditImage = true;
+								$ctrl.ignoreParentClick = true;
+							}
+						};
+						$ctrl.swapImages = function () {
+							$ctrl.ignoreParentClick = true;
+
+							$ctrl.closeMenu();
+							$ctrl.imageElement.toggleClass("loading");
+							addCollectibleService
+								.swapCollectibleImages($scope.collectibleID, $scope.competitiveslotID)
+								.then(function (result) {
+									if (result.Success) {
+										if($scope.competitiveslotID)
+											$rootScope.$broadcast("competitiveSet.refresh", result.Collectible);
+										else
+											$rootScope.$broadcast("collectible.swapImages", result.Collectible);
+									}
+								})
+								.catch(handleError)
+								.finally(function () {
+									$ctrl.imageElement.toggleClass("loading");
+								});
+						};
+						this.addDefaultImage = function() {
+							$ctrl.imageElement.toggleClass("loading");
+							$ctrl.closeMenu();
+							$ctrl.ignoreParentClick = true;
+							
+							addCollectibleService
+								.lookupAndSaveDefaultImage($scope.collectibleID, $scope.isObverse, !$scope.isObverse)
+								.then(function(results) {
+									if(results.Success) {
+										var fullUrl, thumbUrl;
+										if($scope.isObverse) {
+											fullUrl = results.ObverseFullUrl;
+											thumbUrl = results.ObverseThumbUrl;
+										} else {
+											fullUrl = results.ReverseFullUrl;
+											thumbUrl = results.ReverseThumbUrl;
+										}
+
+										$ctrl.refresh(fullUrl, thumbUrl);
+									} else if(results.NoDefaultImage) 
+										handleError($filter("localize")("Error.NoDefaultImageAvailable"));
+									else if(results.OverSizeLimit)
+										handleError($filter("localize")("Error.OverSizeLimit"));
+									else handleError($filter("localize")("Error.SaveError"));
+								})
+								.catch(handleError)
+								.finally(function() {
+									$ctrl.imageElement.toggleClass("loading");
+								});
+						};
+
+						function handleError(message) {
+							notifier.showError(message, 5000);
+						}
+						function openNewImageSelect() {
+							$("#select-image-" + $scope.collectibleID + $ctrl.side + $ctrl.scopeID).click();
+						}
+						function refreshImageForCollectible(collectible) {
+							$scope.collectibleID = collectible.CollectibleID;
+							$scope.showAddDefaultImage = collectible.ShowAddDefaultImage;
+
+							if ($scope.isObverse)
+								$ctrl.refresh(collectible.ObverseImagePath, collectible.ObverseThumbPath);
+							else
+								$ctrl.refresh(collectible.ReverseImagePath, collectible.ReverseThumbPath);
+						}
+
+						if($scope.competitiveslotID) {
+							$scope.$on("collectible.refresh-slot-" + $scope.competitiveSlotID, function(event, collectible) {
+								refreshImageForCollectible(collectible);
+							});
+						}
+
+						$scope.$on("collectible.refresh-" + $scope.collectibleID, function (event, collectible) {
+							refreshImageForCollectible(collectible);
+						});
+					}
+				]
+			};
+		}
+	]);
+;
+"use strict";
+angular.module("CCG.AddCollectible")
+	.directive("ccgAddCollectibleImages", [
+		"urlService", 
+		function(urlService) {
+			return {
+				templateUrl	: urlService.templateUrl("/registry/manage/collectibles/templates/add-collectible-images/"),
+				scope		: {
+					collectibleDetailsResults: "=ccgAddCollectibleImages"
+				},
+				controllerAs: "$ctrl",
+				controller: [
+					"$scope", "$filter", "addCollectibleService", "domService",
+					function($scope, $filter, addCollectibleService, domService) {
+						var $ctrl = this;
+
+						if($ctrl.hasImages || !domService.supportsFileReader)
+							$ctrl.goToNextStep();
+
+						$ctrl.saveImages = function() {
+							// the only time these will equal the Default*Image is if the user doesn't change the path
+							// If there is a default image, save it to the collectible
+							var saveDefaultObverse = $ctrl.hasDefaultObverse && $ctrl.obverseImagePath == $ctrl.defaultObverseImage;
+							var saveDefaultReverse = $ctrl.hasDefaultReverse && $ctrl.reverseImagePath == $ctrl.defaultReverseImage;
+							if(saveDefaultReverse || saveDefaultObverse) {
+								$ctrl.isConfirmingImages = true;
+								addCollectibleService.lookupAndSaveDefaultImage($ctrl.collectibleID, saveDefaultObverse, saveDefaultReverse)
+									.then(function() {
+										$ctrl.isConfirmingImages = false;
+										$ctrl.goToNextStep();
+									});
+							} else {
+								$ctrl.goToNextStep();
+							}
+						};
+						$ctrl.goToNextStep = function() {
+							if($ctrl.hasExistingSets) {
+								$scope.$emit("addCollectible.selectExistingSets", $ctrl.collectibleID);
+							} else {
+								$scope.$emit("addCollectible.selectSetType", $ctrl.collectibleID);
+							}
+						};
+						$ctrl.goToCollectibleLookup = function() {
+							$scope.$emit("addCollectible.openLookup", { grader: $scope.CollectibleSummary.Grader });
+						};
+						function handleError(message) {
+							if(!message)
+								return;
+
+							$ctrl.errorMessage = message;
+						}
+					}
+				],
+				link: function(scope, element, attrs, ctrl) {
+					scope.CollectibleSummary = scope.collectibleDetailsResults.CollectibleSummary;
+					ctrl.preferredSlot       = scope.collectibleDetailsResults.PreferredSlot;
+					ctrl.hasImages           = scope.collectibleDetailsResults.Results.HasImages;
+					ctrl.hasExistingSets     = scope.collectibleDetailsResults.Results.SetsExistForCollectible;
+					ctrl.isNewCollectible    = scope.collectibleDetailsResults.Results.IsNewCollectible;
+					ctrl.collectibleID       = scope.CollectibleSummary.CollectibleID;
+
+					ctrl.obverseImagePath    = scope.CollectibleSummary.ObverseImage;
+					ctrl.obverseThumbPath    = scope.CollectibleSummary.ObverseThumb;
+					ctrl.reverseImagePath    = scope.CollectibleSummary.ReverseImage;
+					ctrl.reverseThumbPath    = scope.CollectibleSummary.ReverseThumb;
+
+					ctrl.defaultObverseImage = scope.CollectibleSummary.DefaultObverseImage;
+					ctrl.defaultReverseImage = scope.CollectibleSummary.DefaultReverseImage;
+					ctrl.hasDefaultObverse   = scope.CollectibleSummary.HasDefaultObverse;
+					ctrl.hasDefaultReverse   = scope.CollectibleSummary.HasDefaultReverse;
+				}
+			};
+		}
+	]);;
+"use strict";
+angular.module("CCG.AddCollectible")
+	.directive("ccgAddCollectibleLookup", [
+		"urlService",
+		function(urlService) {
+			return {
+				templateUrl	: urlService.templateUrl("/registry/manage/collectibles/templates/add-collectible-lookup/"),
+				scope		: {
+					preferredSlot: "=preferredSlot",
+					certNumber   : "=certNumber",
+					grader       : "=grader"
+				},
+				controllerAs: "$ctrl",
+				controller: [
+					"$scope", "$rootScope", "addCollectibleService",
+					function($scope, $rootScope, addCollectibleService) {
+						var $ctrl = this;
+						$ctrl.grader         = $scope.grader;
+						$ctrl.certNumber     = $scope.certNumber;
+						$ctrl.entryDisabled  = false;
+
+						$ctrl.lookup = function(e) {
+							if($scope.form.$invalid) 
+								return;
+
+							$scope.form.$submitting = true;
+							addCollectibleService
+								.lookupCert($ctrl.grader, $ctrl.certNumber, $scope.preferredSlot)
+								.then(function(results) {
+									$ctrl.certNumber	= results.CertNumber;
+									if(results.CollectibleSummary) {
+										$scope.CollectibleSummary = results.CollectibleSummary;
+										$scope.CollectibleSummary.LookupResult = results.Message;
+										$scope.CollectibleSummary.IsNewCollectible = results.IsAddedToCollection;
+									}
+
+									if(results.IsInMyCollection || results.IsAddedToCollection) {
+										$ctrl.goToAddCollectibleImages();
+									} else {
+										$ctrl.results = results;
+										$ctrl.entryDisabled = true;
+
+										if(results.RequiresConfirmation)
+											$ctrl.nextStep = "confirm-collectible";
+										else if(!results.IsProIVDown)
+											$ctrl.nextStep = "add-more-collectible";
+									}
+								})
+								.catch(handleError)
+								.finally(function() {
+									$scope.form.$submitting = false;
+								});
+						};
+
+						$ctrl.confirmCollectible = function() {
+							$ctrl.isConfirming	= true;
+							addCollectibleService
+								.confirmCert($ctrl.grader, $ctrl.certNumber, $scope.preferredSlot)
+								.then(function(results) {
+									if(results.IsInMyCollection)
+										$ctrl.nextStep = "continue";
+									else $ctrl.nextStep = "add-more-collectible";
+
+									$.extend($ctrl.results, results);
+									$scope.CollectibleSummary = results.CollectibleSummary;
+									$ctrl.entryDisabled = true;
+								})
+								.catch(handleError)
+								.finally(function() {
+									$ctrl.isConfirming = false;
+								});
+						};
+						$ctrl.goToAddCollectibleImages = function() {
+							$scope.$emit("addCollectible.addCollectibleImages", {
+								collectibleID: $scope.CollectibleSummary.CollectibleID,
+								summary: $scope.CollectibleSummary,
+								slot:    $scope.preferredSlot
+							});
+						};
+						$ctrl.resetForm = function(grader, clearCertNum) {
+							if(clearCertNum)
+								$ctrl.certNumber = "";
+
+							$ctrl.grader         = grader;
+							$ctrl.entryDisabled  = false;
+							$ctrl.isConfirming   = false;
+							$ctrl.results        = undefined;
+							$ctrl.nextStep       = undefined;
+
+							$scope.form.$setPristine();
+				            $scope.form.$setUntouched();
+						};
+						
+						function handleError() {
+							// TODO
+							$ctrl.entryDisabled = false;
+						}
+					}
+				],
+				link: function(scope, element, attrs, controller) {
+					scope.baseUrl = urlService.root;
+				}
+			};
+		}
+	]);
+;
+"use strict";
+angular.module("CCG.AddCollectible")
+	.factory("addCollectibleService", [
+		"webServiceFactory", "$rootScope", "Upload",
+		function(webServiceFactory, $rootScope, Upload) {
+			return webServiceFactory.create({
+				lookupCert: function(grader, certNumber, preferredSlot) {
+					return this.post("/registry/manage/collectibles/lookup/" + grader.toLowerCase() + "/", {
+						certNumber: certNumber,
+						preferredSlot: preferredSlot
+					});
+				},
+				confirmCert: function(grader, certNumber, preferredSlot) {
+					return this.post("/registry/manage/collectibles/confirm-lookup/" + grader.toLowerCase() + "/", {
+						certNumber: certNumber,
+						preferredSlot: preferredSlot
+					});
+				},
+				checkCollectibleDetails: function(collectibleID, skipSetInfoCheck) {
+					return this.post("/registry/manage/collectibles/" + collectibleID + "/check-collectible-details/", {
+						skipSetInfoCheck: skipSetInfoCheck
+					});
+				},
+				manageImagePath: function(collectibleID, side) {
+					return this.cleanUrl("/registry/manage/collectibles/" + collectibleID + "/" + side + "/");
+				},
+				deleteCollectibleImage: function(collectibleID, side) {
+					return this.post(this.manageImagePath(collectibleID, side) + "delete/");
+				},
+				updateCollectibleImage: function(collectibleID, side, file, orientation) {
+					return Upload.upload({
+						url	: this.manageImagePath(collectibleID, side),
+						data: {
+							image: file,
+							orientation: orientation
+						}
+					});
+				},
+				lookupAndSaveDefaultImage: function(collectibleID, useObverseImage, useReverseImage) {
+					return this.post("registry/manage/collectibles/" + collectibleID + "/default-images/", {
+						useDefaultObverseImage: useObverseImage,
+						useDefaultReverseImage: useReverseImage
+					});
+				},
+				swapCollectibleImages: function(collectibleID, competitiveSlotID) {
+					return this.post("registry/manage/collectibles/" + collectibleID + "/swap-images/", {
+						competitiveSlotID: competitiveSlotID
+					});
+				},
+			});
+		}
+	]);
+;
+"use strict";
+angular.module("CCG.AddCollectible")
+	.directive("ccgAddCollectibleToCompetitiveSet", [
+		"urlService",
+		function(urlService) {
+			return {
+				templateUrl: urlService.templateUrl("/registry/manage/sets/templates/add-to-competitive-set/"),
+				scope		: {
+					data: "=ccgAddCollectibleToCompetitiveSet",
+					selectSlot: "=selectSlot",
+				},
+				controllerAs: "$ctrl",
+				controller: [
+					"$scope", "addCollectibleToSetService", "user",
+					function($scope, addCollectibleToSetService, user) {
+						var $ctrl = this;
+						$scope.user = user;
+						// TODO: There are shared events from ccgSelector
+						$scope.events = $scope.events || {};
+
+						$ctrl.selectSet = function(set) {
+							$scope.form.setName.$setValidity("unique", true);
+							$scope.selectedSet = set;
+							$scope.events.select(set);
+						};
+						$ctrl.toggleSet = function(set) {
+							if($scope.selectedSet && $scope.selectedSet.IsNewSet)
+								$scope.selectedSet.SetName = "";
+
+							$scope.events.toggle(set);
+							if($scope.events.isSelected(set)) {
+								$scope.selectedSet = set;
+							} else {
+								$scope.selectedSet = null;
+							}
+						};
+						$ctrl.addToSet = function(e) {
+							if($scope.selectedSet == null)
+								return;
+
+							addToSet();
+						};
+						$ctrl.close = function() {
+							$scope.$emit("addCollectible.close");
+						};
+						$ctrl.goBack = function() {
+							$scope.$emit("addCollectible.selectSetType", $scope.CollectibleSummary.CollectibleID);
+						},
+						$ctrl.startOver = function() { 
+							$scope.$emit("addCollectible.openLookup"); 
+						};
+						$ctrl.addToAnotherSet = function() { 
+							$scope.$emit("addCollectible.selectSetType", $scope.CollectibleSummary.CollectibleID); 
+						};
+
+						function handleError() {
+							$scope.showErrorMessage = true;
+						}
+
+						function addToSet() {
+							$scope.form.$submitting = true;
+					
+							var slot = {
+								competitiveSetID  : $scope.selectedSet.CompetitiveSetID,
+								setName		      : $scope.selectedSet.SetName,
+								competitiveSlotID : $scope.CompetitiveSlotID
+							};
+
+							addCollectibleToSetService
+								.addToSet($scope.CollectibleSummary.CollectibleID, slot)
+								.then(function(results) {
+									$scope.results = results;
+								})
+								.catch(handleError)
+								.finally(function() {
+									$scope.form.$submitting = false;
+								});							
+						}
+					}
+				],
+				link: function(scope, element, attrs, controller) {
+					scope.baseUrl = urlService.root;
+					angular.extend(scope, scope.data);
+				}
+			}
+		}
+	]);
+;
+"use strict";
+angular.module("CCG.AddCollectible")
+	.directive("ccgAddCollectibleToExistingSets", [
+		"urlService", 
+		function(urlService) {
+			return {
+				templateUrl: urlService.templateUrl("/registry/manage/sets/templates/add-to-existing-sets/"),
+				scope		: {
+					data: "=ccgAddCollectibleToExistingSets"
+				},
+				controllerAs: "$ctrl",
+				controller: [
+					"$scope", "addCollectibleToSetService", "user",
+					function($scope, addCollectibleToSetService, user) {
+						var $ctrl = this;
+						$scope.user = user;
+						$scope.isCreatingNewSet = false;
+
+						$ctrl.isSelected = function(set) {
+							return $scope.selectedSets.indexOf(set) >= 0;
+						};
+						$ctrl.isDuplicateSetType = function(set) {
+							var setTypeSelected = _.filter($scope.selectedSets, { CompetitiveSetTypeID: set.CompetitiveSetTypeID }).length == 1;
+							return setTypeSelected && !$ctrl.isSelected(set);
+						};
+						$ctrl.isValid = function() {
+							return $scope.selectedSets.length > 0;
+						};
+						$ctrl.toggleSet = function(set) {
+							if(!set.AddToSetEnabled || $ctrl.isDuplicateSetType(set))
+								return;
+
+							$scope.isCreatingNewSet = false;
+							if($ctrl.isSelected(set)) {
+								$scope.selectedSets.splice($scope.selectedSets.indexOf(set), 1);
+							} else {
+								$scope.selectedSets.push(set);
+							}
+						};
+						$ctrl.selectCreateNewSet = function() {
+							$scope.selectedSets = [];
+							$scope.isCreatingNewSet = !$scope.isCreatingNewSet;
+						};
+						$ctrl.addToSets = function(e) {
+							if($scope.selectedSets.length === 0 && !$scope.isCreatingNewSet)
+								return;
+								
+							if($scope.isCreatingNewSet) {
+								$scope.$emit("addCollectible.selectSetType", $scope.CollectibleSummary.CollectibleID); 
+							} else {
+								addToSets();
+							}
+						};
+						$ctrl.close = function() {
+							$scope.$emit("addCollectible.close");
+						};
+						$ctrl.startOver = function() 		{ 
+							$scope.$emit("addCollectible.openLookup"); 
+						};
+						$ctrl.addToAnotherSet = function() { 
+							$scope.$emit("addCollectible.selectExistingSets", $scope.CollectibleSummary.CollectibleID);
+						};
+
+						function addToSets() {
+							$scope.form.$submitting = true;
+							var addToSetsData = $scope.selectedSets.map(function (set) {
+								return {
+									collectibleID:     $scope.CollectibleSummary.CollectibleID,
+									competitiveSetID:  set.CompetitiveSetID,
+									competitiveSlotID: set.PreferredSlotID
+								};
+							});
+
+							var promise = addCollectibleToSetService
+								.addToSets(addToSetsData)
+								.then(function(results) {
+									$scope.results = results;
+									$scope.success = results.reduce(function(prev, result) {
+										return result.Success && prev;
+									});
+								}, function() {
+									// TODO: Error handling
+								});
+
+							promise["finally"](function() {
+								$scope.form.$submitting = false;
+							});
+						}
+					}
+				],
+				link: function(scope, element, attrs, controller) {
+					scope.baseUrl = urlService.root;
+					angular.extend(scope, scope.data);
+					scope.selectedSets = [];
+					scope.$watch(function() { return scope.data; }, function(newValue) {
+						angular.extend(scope, newValue);
+						scope.results = null;
+						scope.selectedSets = [];
+						scope.form.$setPristine();
+					});
+				}
+			}
+		}
+	]);
+;
+"use strict";
+angular.module("CCG.AddCollectible")
+	.factory("addCollectibleToSetService", [
+		"webServiceFactory", "$rootScope",
+		function(webServiceFactory, $rootScope) {
+			return webServiceFactory.create({
+				manageSetPath: function(competitiveSetID) {
+					return "/registry/manage/sets/" + competitiveSetID + "/";
+				},
+				fetchAvailableCollectibles: function(slot) {
+					return this.post("/registry/manage/sets/fetch-available-collectibles/", {
+						competitiveSetID: slot.competitiveSetID,
+						competitiveSlotID: slot.competitiveSlotID
+					});
+				},
+				fetchAvailableSets: function(collectibleID, setTypeID, fetchAllSets) {
+					return this.post("/registry/manage/sets/fetch-available-sets/", {
+						collectibleID: collectibleID,
+						setTypeID:    setTypeID,
+						fetchAllSets: fetchAllSets
+					});
+				},
+				fetchAvailableSetTypes: function(collectibleID) {
+					return this.post("/registry/manage/sets/fetch-available-set-types/", {
+						collectibleID: collectibleID
+					});
+				},
+				addToSet: function(collectibleID, slotData) {
+					return this.post("/registry/manage/sets/add-to-set/", {
+							collectibleID	  : collectibleID,
+							competitiveSetID  : slotData.competitiveSetID,
+							competitiveSlotID : slotData.competitiveSlotID,
+							setName			  : slotData.setName
+						})
+						.then(function(results) {
+							$rootScope.$broadcast("competitiveSet.refresh", results);
+							return results;
+						});
+				},
+				addToSets: function(addToSetsData) {
+					return this.post("/registry/manage/sets/add-to-sets/", addToSetsData)
+						.then(this.refreshSlot);
+				},
+				removeFromSet: function(collectibleID, slotData) {
+					return this.post("/registry/manage/sets/remove-from-set/", {
+						collectibleID: collectibleID,
+						competitiveSetID : slotData.competitiveSetID,
+						competitiveSlotID: slotData.competitiveSlotID
+					}).then(this.refreshSlot);
+				},
+				removeFromInventory: function(collectibleID, slotData) {
+					return this.post("/registry/manage/sets/remove-from-inventory/", {
+						collectibleID: collectibleID,
+						competitiveSetID : slotData.competitiveSetID,
+						competitiveSlotID: slotData.competitiveSlotID
+					}).then(this.refreshSlot);
+				},
+				refreshSlot: function(modifySetResults) {
+					$rootScope.$broadcast("competitiveSet.refresh", modifySetResults);
+					return modifySetResults;
+				},
+				validateSlot: function(collectibleID, slotData) {
+					return this.post("/registry/manage/sets/validate-add-to-slot/", {
+						collectibleID       : collectibleID,
+						competitiveSetID	: slotData.competitiveSetID,
+						competitiveSlotID	: slotData.competitiveSlotID
+					}).then(this.refreshSlot);
+				},
+				requestNewSetType: function(setTypeRequest) {
+					return this.post("/resources/services/registry/competitive/set-type-request/", setTypeRequest);
+				}
+			});
+		}
+	]);
+;
+"use strict";
+angular.module("CCG.AddCollectible")
+	.directive("ccgAddCollectibleToSetType", [
+		"urlService",
+		function(urlService) {
+			return {
+				templateUrl: urlService.templateUrl("/registry/manage/sets/templates/add-to-set-type/"),
+				scope		: {
+					data: "=ccgAddCollectibleToSetType"
+				},
+				controllerAs: "$ctrl",
+				controller: [
+					"$scope", 
+					function($scope) {
+						var $ctrl = this;
+						this.mode = "InvalidCollectible";
+						this.submitting = false;
+
+						$ctrl.addToSetType = function(setType) {
+							if(!setType.AddToSetTypeEnabled)
+								return;
+
+							this.submitting = true;
+							setType.selected = true;
+							$scope.$emit("addCollectible.setTypeSelected", $scope.CollectibleSummary.CollectibleID, setType.CompetitiveSetTypeID);
+						};
+						$ctrl.goToRequestNewSetType = function() {
+							$scope.$emit("addCollectible.requestNewSetType", { collectibleSummary: $scope.CollectibleSummary });
+						};
+						$ctrl.startOver = function() {
+							$scope.$emit("addCollectible.openLookup");
+						};
+					}
+				],
+				link: function(scope, element, attrs, ctrl) {
+					if(!scope.data)
+						return;
+
+					var setTypes = _(scope.data.Subcategories)
+									.map("SetTypes")
+									.flatten()
+									.valueOf();
+
+					angular.extend(ctrl, scope.data);
+					scope.CollectibleSummary 	= scope.data.CollectibleSummary;
+					ctrl.mode = (setTypes.length > 0) ? "SelectSetType" : "NoSetTypes";
+
+					if(ctrl.mode === "NoSetTypes")
+						scope.$emit("addCollectible.requestNewSetType",
+							{
+								collectibleSummary: scope.CollectibleSummary,
+								hasNoEligibleSet: true
+							});
+
+					ctrl.hasAvailable 	= _.some(setTypes, function(setType) {
+						return setType.AddToSetTypeEnabled;
+					});
+				}
+			}
+		}
+	]);
+;
+"use strict";
+angular.module("CCG.AddCollectible")
+	.directive("ccgConfirmSlot", [
+		"urlService", "addCollectibleToSetService",
+		function(urlService, addCollectibleToSetService) {
+			return {
+				templateUrl	: urlService.templateUrl("/registry/manage/sets/templates/confirm-slot/"),
+				replace: true,
+				scope: {
+					slotResults: "=ccgConfirmSlot",
+					preferredSlot: "="
+				},
+				controllerAs: "$ctrl",
+				controller: [
+					"$scope",
+					function($scope) {
+						var $ctrl = this;
+
+						$ctrl.confirmSlot = function() {
+							addCollectibleToSetService
+								.addToSet($scope.slotResults.CollectibleSummary.CollectibleID, $scope.preferredSlot)
+								.then(function(results) {
+									if(results.Message) {
+										$ctrl.message = results.Message;
+										$ctrl.viewMode = null;
+										$ctrl.showWarning = false;
+									}
+									else handleError();
+								})
+							    .catch(handleError);
+						};
+
+						$ctrl.goToAddToSets = function(results) {
+							$scope.$emit("addCollectible.selectExistingSets", $scope.slotResults.CollectibleSummary.CollectibleID, true);
+						};
+
+						function handleError(err) {
+							console.log('Error thrown from confirm-slot: ', err);
+						}
+					}
+				],
+				link: function(scope, element, attrs, $ctrl) {
+					scope.CollectibleSummary = scope.slotResults.CollectibleSummary;
+					$ctrl.message = scope.slotResults.Message;
+					$ctrl.viewMode = "confirm-slot";
+					$ctrl.showWarning = true;
+				}
+			}
+		}
+]);;
+"use strict";
+angular.module("CCG.AddCollectible")
+	.directive("ccgEditSlot", ["urlService",
+		function(urlService) {
+			return {
+				templateUrl	: urlService.templateUrl("/registry/manage/sets/templates/edit-slot/"),
+				scope		: {
+					slot: "=ccgEditSlot"
+				},
+				controllerAs: "$ctrl",
+				controller: [
+					"$scope", "addCollectibleToSetService",
+					function($scope, addCollectibleToSetService) {
+						var $ctrl = this;
+
+						$ctrl.selectCollectible = function(collectible) {
+							if(collectible.disabledDuringAdd)
+								return;
+
+							$scope.events.toggle(collectible);
+							if(collectible.IsInSlot) {
+								if($scope.events.isSelected(collectible))
+									$ctrl.changeRemoveMode(null, collectible, null);
+								else $ctrl.changeRemoveMode(null, collectible, "removal-scope");
+							} else {
+								collectible.addingToSet = true;
+								toggleModeForOtherCollectibles(collectible, true);
+								addCollectibleToSetService.addToSet(collectible.CollectibleID, $ctrl.slot, collectible.CollectibleID)
+									.then(function(results) {
+										$scope.$emit("addCollectible.close");
+										collectible.addingToSet = false;
+										toggleModeForOtherCollectibles(collectible, false);
+									});
+							}
+						};
+						$ctrl.changeRemoveMode = function(e, collectible, mode) {
+							if(e) e.stopPropagation();
+							collectible.removeMode = mode;
+						};
+						$ctrl.removeFromSet = function(e, collectible) {
+							e.stopPropagation();
+							addCollectibleToSetService.removeFromSet(collectible.CollectibleID, $ctrl.slot)
+							this.close();
+						};
+						this.removeFromInventory = function(e, collectible) {
+							e.stopPropagation();
+							addCollectibleToSetService.removeFromInventory(collectible.CollectibleID, $ctrl.slot)
+							this.close();
+						};
+						$ctrl.addNewCollectible = function(grader) {
+							$scope.$emit("addCollectible.openLookup", { grader: grader, slot: $ctrl.slot });
+						};
+						$ctrl.close = function() {
+							$scope.$emit("addCollectible.close");
+						};
+						function toggleModeForOtherCollectibles(collectibleBeingAdded, disabled){
+							_.forEach($ctrl.collectibles, function(collectible) {
+								if(collectibleBeingAdded.CollectibleID == collectible.CollectibleID)
+									return;
+
+								if(disabled) 
+									collectible.disabledDuringAdd = true;
+								else if(!disabled && collectible.disabledDuringAdd) 
+									collectible.disabledDuringAdd = false;
+							});
+						};
+					}
+				],
+				link: function(scope, element, attrs, controller) {
+					controller.collectibles = scope.slot.Collectibles;
+					controller.slot = {
+						competitiveSetID  : scope.slot.SetID,
+						competitiveSlotID : scope.slot.SlotID,
+						slotName	      : scope.slot.SlotName,
+						hasCollectibles	  : scope.slot.Collectibles.length > 0
+					};
+
+					var selectedCollectible = _.find(controller.collectibles, { IsInSlot: true });
+					setTimeout(function() {
+						scope.events.select(selectedCollectible);
+					});
+				}
+			}
+		}
+	]);
+;
+"use strict";
+angular.module("CCG.AddCollectible")
+	.directive("ccgRequestNewSetType", [
+		"urlService",
+		function(urlService) {
+			return {
+				templateUrl: urlService.templateUrl("/registry/manage/sets/templates/request-new-set-type/"),
+				scope: {
+					parameters: "=parameters"
+				},
+				controllerAs: "$ctrl",
+				controller: [
+					"$scope", "addCollectibleToSetService",
+					function($scope, addCollectibleToSetService) {
+						var $ctrl = this;
+						//this is needed for the collectible header
+						$scope.Parameters = $scope.parameters.collectibleSummary;
+						$scope.CollectibleSummary = $scope.Parameters.collectibleSummary;
+
+						$ctrl.isCertRequired = $scope.Parameters.isCertRequired;
+						$ctrl.hasNoEligibleSet = $scope.Parameters.hasNoEligibleSet;
+						$ctrl.isFromSetPage = $scope.Parameters.isFromSetPage;
+
+						$ctrl.requestNewSetType = function(withReset) {
+
+							$scope.requestSetTypeForm.validate();
+
+							if(!$scope.requestSetTypeForm.$valid)
+								return;
+
+							var setTypeRequest = {
+								category: $ctrl.category,
+								setTypeName: $ctrl.setTypeName,
+								relatedCertNums: $ctrl.relatedCertNums,
+								collectibleID: $scope.CollectibleSummary?.CollectibleID
+							};
+
+							addCollectibleToSetService.requestNewSetType(setTypeRequest)
+								.then(function(result) {
+									if(result.Success) {
+										$ctrl.setTypeName = null;
+										$ctrl.category = null;
+										$ctrl.relatedCertNums = null;
+										$ctrl.successMessage = "Submitted.";
+
+										$scope.requestSetTypeForm.$setUntouched();
+										$scope.requestSetTypeForm.$setPristine();
+
+										if(!withReset)
+											$scope.$emit("addCollectible.close");
+									} else {
+										$ctrl.errorMessage = result.ErrorMessage;
+									}
+								}).catch(function(err) {
+									$ctrl.errorMessage = "Failed to save set type request.";
+								});
+						};
+
+						$ctrl.goBack = function() {
+							$scope.$emit("addCollectible.selectSetType", $scope.Parameters.collectibleSummary.CollectibleID);
+						};
+
+						$ctrl.close = function() {
+							$scope.$emit("addCollectible.close");
+						};
+
+						$ctrl.addMoreCollectibles = function() {
+							$scope.$emit("addCollectible.openLookup", $scope.Parameters.collectibleSummary.Grader);
+						};
+					}
+				]
+			};
+		}
+	]);
+;

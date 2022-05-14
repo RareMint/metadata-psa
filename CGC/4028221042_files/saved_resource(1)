@@ -1,0 +1,129 @@
+
+
+/*
+Since this file isn't a javascript file and the text isn't wrapped in a script tag, VS treats it like a plain text.
+If we want to have syntax highlighting and stuff, there's an example on how to add the script tag, then remove it when
+being rendered via attributes found here:
+https://mariusschulz.com/blog/generating-external-javascript-files-using-partial-razor-views
+
+You can use these w/ the localize filter by {{"Test.TestString" | localize}}.
+You can also pass args into localize by {{"Test.TestFormat" | localize:["Hello", "World"]}} or {{"Test.TestFormat" | localize:[somePrimativeVariable, "World"]}}
+*/
+
+angular.module("CCG.Shared")
+	.value("translationDictionary", {
+		Error: {
+			NoNGCImageAvailable:	 "[[Error.NoNGCImageAvailable]]",
+			NoDefaultImageAvailable: "Sorry, no CGC image is available.",
+			OverSizeLimit:			 "[[Error.OverSizeLimit]]",
+			SaveError:				 "[[Error.SaveError]]",
+			UploadError:			 "[[Error.UploadError]]",
+			UploadTooLarge:			 "[[Error.UploadTooLarge]]",
+			WaiverSubmitFailed:		 "[[Error.WaiverSubmitFailed]]",
+			},
+			Forms: {
+			CardholderName:         "Name on Card",
+			Name:                   "[[Forms.Name]]",
+			},
+			Registry: {
+			AddNGCImage:			"[[Registry.AddNGCImage]]",
+			AddDefaultImage:		"Add CGC Image",
+			},
+			Terms: {
+			ConfirmDelete:          "Confirm delete",
+			DeleteImage:            "Delete Image",
+			Image:                  "Image",
+			NewImage:               "New Image",
+			ReplaceImage:           "Replace Image",
+			SwapImageOrder:         "Swap Image Order",
+			ViewImage:              "View Image",
+			DiscountApplied:        "CODE discount applied",
+			},
+			CoinExplorerSearch: {
+			MaxSearchResults:       "[[CoinExplorerSearch.MaxSearchResults]]",
+			NoCoinsFound:           "[[CoinExplorerSearch.NoCoinsFound]]"
+			},
+			Orderform: {
+			Artist:			        "Artist",
+			Account:			    "Account",
+			CallForPricing:         "Call For Pricing",
+			CantFindCollectible:    "I can't find my {0}.",
+			CollectibleInfo:	    "Collectible Info",
+			CollectibleNumber:      "Collectible Number",
+			ContactCustomerService: "Please contact customer service.",
+			CurrencySymbol:         "$",
+			Each:                   "Each",
+			FastTrack:              "[[Orderform.FastTrack]]",
+			FreeUserNote:           "A paid membership is required to submit {0} for Grading, CrossOver, or ReHolder. <a href='/account/membership/' target='_blank' class='text-decoration'>Upgrade Now ></a>",
+			Handling:               "Handling",
+			LoadLegacyOrderTimeout: "Sorry, this order is taking longer to load than expected. If you do not see your order information within 10 minutes, please contact customer service.",
+			MaxSearchResults:       "Only the first 50 matches are shown. Enter more search terms to narrow these results.",
+			Minimum:                "min",
+			Name:				    "Name",
+			NoLabel:                "[[Orderform.NoLabel]]",
+			PercentFMV:             "% FMV",
+			Shipping:               "Shipping",
+			SubmissionNumber:	    "Order&nbsp;#",
+			Subtotal:               "Subtotal",
+			TBD:                    "TBD",
+			Tier:				    "Tier",
+			Total:                  "Total",
+			UnpaidDealerNote:       "A paid Authorized Dealer membership is required to submit {0} for Grading or most other services. <a href='/dealers/benefits/' target='_blank' class='text-decoration'>Learn More ></a>",
+			YourCartIsFull:         "Your cart has reached the limit of {0} items. Please check out and start a new submission."
+			},
+			OrderformSite: {
+			DeclaredValueTooltip:                      "Best estimate of the fair market value of this card based on the recent purchase price of the card, auction results, a bonafide purchase offer, or other reasonable method.  Declared value will be used to insure your card while it is in CGC's possession.<br><br>If you are submitting more than 1 of the same card, enter the declared value per card rather than the total declared value.",
+			ComicLookupTooltip:                        "[[OrderformSite.ComicLookupTooltip]]",
+			CardLookupTooltip:                         "For the best search results, we recommend searching by game, card name, card number, set name, language, variant(s) and rarity.",
+			MagazineLookupTooltip:                     "[[OrderformSite.MagazineLookupTooltip]]",
+			PosterLookupTooltip:                       "[[OrderformSite.PosterLookupTooltip]]",
+			ComicTypeaheadPlaceholder:                 "[[OrderformSite.ComicTypeaheadPlaceholder]]",
+			CardTypeaheadPlaceholder:                  "Enter card name, card number, set name, language, etc.",
+			MagazineTypeaheadPlaceholder:              "[[OrderformSite.MagazineTypeaheadPlaceholder]]",
+			PosterTypeaheadPlaceholder:                "[[OrderformSite.PosterTypeaheadPlaceholder]]",
+			ComicSingular:                             "[[OrderformSite.ComicSingular]]",
+			ComicPlural:                               "[[OrderformSite.ComicPlural]]",
+			CardSingular:                              "Card",
+			CardPlural:                                "Cards",
+			MagazineSingular:                          "[[OrderformSite.MagazineSingular]]",
+			MagazinePlural:                            "[[OrderformSite.MagazinePlural]]",
+			PosterSingular:                            "[[OrderformSite.PosterSingular]]",
+			PosterPlural:                              "[[OrderformSite.PosterPlural]]",
+			ComicIncluded:                             "[[OrderformSite.ComicIncluded]]",
+			CardIncluded:                              "Cards Included",
+			MagazineIncluded:                          "[[OrderformSite.MagazineIncluded]]",
+			PosterIncluded:                            "[[OrderformSite.PosterIncluded]]",
+			ComicPackingInstructions:                  "[[OrderformSite.ComicPackingInstructions]]",
+			CardPackingInstructions:                   "Pack your cards in the order that appears on the PACKING LIST, NOT THE ORDER IN WHICH YOU ENTERED THEM.<br />Failure to do so will result in delays.",
+			MagazinePackingInstructions:               "[[OrderformSite.MagazinePackingInstructions]]",
+			PosterPackingInstructions:                 "[[OrderformSite.PosterPackingInstructions]]",
+			CGC_CCGAddress:                            "[[OrderformSite.CGC_CCGAddress]]",
+			CGC_CCGAddressNonPO:                       "[[OrderformSite.CGC_CCGAddressNonPO]]",
+			CardCCGAddress:                            "CGC Trading Cards<br />PO Box 4701<br />Sarasota, FL 34230",
+			CardCCGAddressNonPO:                       "CGC Trading Cards<br />5501 Communications Parkway<br />Sarasota, FL 34240",
+			MagazineCCGAddress:                        "[[OrderformSite.MagazineCCGAddress]]",
+			MagazineCCGAddressNonPO:                   "[[OrderformSite.MagazineCCGAddressNonPO]]",
+			PosterCCGAddress:                          "[[OrderformSite.PosterCCGAddress]]",
+			PosterCCGAddressNonPO:                     "[[OrderformSite.PosterCCGAddressNonPO]]",
+			AddComic:                                  "[[OrderformSite.AddComic]]",
+			AddCard:                                   "Add Trading Card",
+			AddMagazine:                               "[[OrderformSite.AddMagazine]]",
+			AddPoster:                                 "[[OrderformSite.AddPoster]]",
+			PrivateSigningRequestTitle:                "[[OrderformSite.PrivateSigningRequestTitle]]",
+			RemarquePlaceholder:                       "[[OrderformSite.RemarquePlaceholder]]",
+			SketchCoverPlaceholder:                    "[[OrderformSite.SketchCoverPlaceholder]]",
+			PrivateSigningPackingInstructions:         "[[OrderformSite.PrivateSigningPackingInstructions]]",
+			ComicPackingSlipMessage:                   "[[OrderformSite.ComicPackingSlipMessage]]",
+			CardPackingSlipMessage:                    "Please print your full packing slip and include it with your shipment. <a target='_blank' rel='noopener noreferrer' href='/services/shipping-cards-to-cgc/' class='text-decoration'>Click here</a> for detailed Packing Instructions.",
+			MagazinePackingSlipMessage:                "[[OrderformSite.MagazinePackingSlipMessage]]",
+			PosterPackingSlipMessage:                  "[[OrderformSite.PosterPackingSlipMessage]]",
+			RemarqueNote:                              "[[OrderformSite.RemarqueNote]]",
+			SketchNote:                                "[[OrderformSite.SketchNote]]",
+			ComicPrivateSigningPackingInstructions:    "[[OrderformSite.ComicPrivateSigningPackingInstructions]]",
+			MagazinePrivateSigningPackingInstructions: "[[OrderformSite.MagazinePrivateSigningPackingInstructions]]"
+			},
+			Currencies: {
+			Dollar: "$",
+			Pound : "£"
+			}
+			});

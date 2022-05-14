@@ -1,0 +1,260 @@
+/* Minification failed. Returning unminified contents.
+(45,48-49): run-time error JS1195: Expected expression: >
+(45,82-83): run-time error JS1004: Expected ';': )
+(45,91-92): run-time error JS1195: Expected expression: >
+(45,101-102): run-time error JS1004: Expected ';': )
+(62,6-7): run-time error JS1002: Syntax error: }
+(63,29-30): run-time error JS1004: Expected ';': {
+(65,7-8): run-time error JS1195: Expected expression: )
+(74,21-22): run-time error JS1004: Expected ';': {
+(128,2-3): run-time error JS1195: Expected expression: ]
+(132,32-33): run-time error JS1197: Too many errors. The file might not be a JavaScript file: [
+(75,4,126,5): run-time error JS1018: 'return' statement outside of function: return {
+				controllerAs: "$ctrl",
+				controller: [
+					"$scope", "certLookupService",
+					function($scope, certLookupService) {
+						var $ctrl = this;
+
+						$ctrl.lookup = function(certNumber) {
+							if(!$ctrl.certNumber)
+								return;
+
+							$ctrl.errorMessage = "";
+							if($ctrl.isHomepage) {
+								redirectToCert(certNumber);
+							} else {
+								$scope.form.$submitting = true;
+								certLookupService.validateCert(certNumber)
+									.then(function(result) {
+										if(result == "Success") {
+											redirectToCert(certNumber);
+										} else {
+											$ctrl.errorMessage = result;
+											$scope.form.$submitting = false;
+										}
+									})
+									.catch(function(error) {
+										$ctrl.errorMessage = "Server Down";
+										$scope.form.$submitting = false;
+									});
+							}
+						};
+
+						function redirectToCert(certNumber) {
+							$window.location.href = "/certlookup/" + certNumber + "/";
+						};
+					}
+				],
+				link: function(scope, elem, attrs, $ctrl) {
+					$ctrl.isHomepage = ($window.location.pathname == "/");
+					$ctrl.certNumber = attrs.certNumber;
+
+					// If there is a cert number, that means it is pre-filling with invalid values.
+					$ctrl.noResults = (!$ctrl.isHomepage && $ctrl.certNumber);
+					if(attrs.proIvDown) {
+						$ctrl.errorMessage = "ProV Down";
+					} else if(attrs.rateLimited) {
+						$ctrl.errorMessage = "Rate Limited";
+					} else if($ctrl.certNumber) {
+						$ctrl.errorMessage = "No Match";
+					}
+				}
+			}
+ */
+"use strict";
+angular.module("CCG.CGCCards")
+	.value("user", CCG.user)
+	.controller("appController", [
+		"$scope", "user", 
+		function($scope, user) {
+			var $ctrl = this;
+			$scope.user = user;
+
+			$ctrl.openAddCollectible = function(certNum, fromCertLookup) {
+				if($scope.user.IsLoggedIn) {
+					if($scope.user.UserType !== "Dealer") {
+						$scope.$broadcast("addCollectible.openLookup", {
+							grader: "CTC",
+							certNumber: certNum,
+							fromCertLookup: fromCertLookup,
+						});
+					}
+				} else {
+					$ctrl.showLoginOrJoinForAddCollectible = true;
+				}
+			};
+
+			$scope.$on("addCollectible.loginOrJoin", $ctrl.openAddCollectible);
+		}
+	]);
+;
+"use strict";
+angular.module("CCG.CGCCards")
+	.controller("certlookupPopulationReportController", [
+		"populationReportGrades", "populationReportService",
+		function(populationReportGrades, populationReportService) {
+			var $ctrl = this;
+			$ctrl.columns = populationReportGrades.getGradeColumns();
+			$ctrl.popReportUrl = "#";
+
+			$ctrl.init = function(masterCardID, grade) {
+				populationReportService.getCardByCollectibleID(masterCardID)
+					.then(function(results) {
+						$ctrl.population = results;
+
+						$ctrl.cardsWithHigherGrade = 0;
+						$ctrl.gradePopulation = 0;
+
+						var columnName = $ctrl.columns.filter(x => x.display === (grade).toString()).map(x => x.column)[0]
+
+						for(var key in $ctrl.columns) {
+							var currentColumn = $ctrl.columns[key].column;
+							if(currentColumn === columnName) {
+								$ctrl.gradePopulation = $ctrl.population[currentColumn];
+								break;
+							} else if(currentColumn !== "population_Total") {
+								$ctrl.cardsWithHigherGrade += $ctrl.population[currentColumn];
+							}
+						}
+
+						$ctrl.popReportUrl = "/population-report/" + $ctrl.population.group.subcategory.category.seoName + "/" +
+											$ctrl.population.group.subcategory.category.researchCategoryID + "/" +
+											$ctrl.population.group.subcategory.seoName + "/" +
+											$ctrl.population.group.subcategory.researchSubcategoryID + "/" +
+											$ctrl.population.group.seoName + "/" + $ctrl.population.group.researchGroupID + "/?populationID=" + $ctrl.population.populationID;
+					})
+					.catch(function(error) {
+						console.log(error)
+					});
+				};
+		}
+	]);
+;
+"use strict";
+angular.module("CCG.CGCCards")
+	.directive("cgcCertLookupSearch", [
+		"$window",
+		function($window) {
+			return {
+				controllerAs: "$ctrl",
+				controller: [
+					"$scope", "certLookupService",
+					function($scope, certLookupService) {
+						var $ctrl = this;
+
+						$ctrl.lookup = function(certNumber) {
+							if(!$ctrl.certNumber)
+								return;
+
+							$ctrl.errorMessage = "";
+							if($ctrl.isHomepage) {
+								redirectToCert(certNumber);
+							} else {
+								$scope.form.$submitting = true;
+								certLookupService.validateCert(certNumber)
+									.then(function(result) {
+										if(result == "Success") {
+											redirectToCert(certNumber);
+										} else {
+											$ctrl.errorMessage = result;
+											$scope.form.$submitting = false;
+										}
+									})
+									.catch(function(error) {
+										$ctrl.errorMessage = "Server Down";
+										$scope.form.$submitting = false;
+									});
+							}
+						};
+
+						function redirectToCert(certNumber) {
+							$window.location.href = "/certlookup/" + certNumber + "/";
+						};
+					}
+				],
+				link: function(scope, elem, attrs, $ctrl) {
+					$ctrl.isHomepage = ($window.location.pathname == "/");
+					$ctrl.certNumber = attrs.certNumber;
+
+					// If there is a cert number, that means it is pre-filling with invalid values.
+					$ctrl.noResults = (!$ctrl.isHomepage && $ctrl.certNumber);
+					if(attrs.proIvDown) {
+						$ctrl.errorMessage = "ProV Down";
+					} else if(attrs.rateLimited) {
+						$ctrl.errorMessage = "Rate Limited";
+					} else if($ctrl.certNumber) {
+						$ctrl.errorMessage = "No Match";
+					}
+				}
+			};
+		}
+	]);
+;
+"use strict";
+angular.module("CCG.CGCCards")
+	.service("certLookupService", [
+		"$http",
+		function($http) {
+			return {
+				validateCert: function(certNumber) {
+					return $http.get("/certlookup/data/" + certNumber + "/")
+						.then(function(response) {
+							return response.data;
+						});
+				}
+			};
+		}
+	]);
+;
+"use strict";
+angular.module("CCG.CGCCards")
+	.controller("dealerListingController", [
+		"dealerListingService",
+		function(dealerListingService) {
+			var $ctrl = this;
+			
+			dealerListingService.fetchLocations()
+				.then(function(result) {
+					$ctrl.locations = result;
+					if($ctrl.locations !== null)
+						$ctrl.selectedLocation = $ctrl.locations[0];
+				})
+				.catch(function(error) {
+					console.log(error)
+				});
+
+			$ctrl.searchDealers = function() {
+				dealerListingService.fetchDealers($ctrl.selectedLocation)
+					.then(function(result) {
+						$ctrl.dealers = result;
+					})
+					.catch(function(error) {
+						console.log(error)
+					});
+			};
+		}
+	]);
+;
+"use strict";
+angular.module("CCG.CGCCards")
+	.service("dealerListingService", [
+		"$http",
+		function($http) {
+			return {
+				fetchLocations: function() {
+					return $http.get("/services/dealer-locator/data/locations/")
+						.then(function(response) {
+							return response.data;
+						});
+				},
+				fetchDealers: function(location) {
+					return $http.get("/services/dealer-locator/data/dealers/" + location + "/")
+						.then(function(response) {
+							return response.data;
+						});
+				},
+			};
+		}
+	]);
+;

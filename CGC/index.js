@@ -42,7 +42,7 @@ const getCGCIds = () => {
           data
             .map((row) => row[2])
             .filter((record) => record)
-            .map((r) => r.split(" ").join(""))
+            .map((r) => String(r))
         );
       });
     } catch (error) {
@@ -80,28 +80,22 @@ const writeToJsonCGC = async (id, data) => {
   const difference = _.difference(ids, files);
   console.log("difference", difference);
 
-  console.log("Missing files", ids);
+  console.log("Missing files", difference);
   for (let i = 0; i < difference.length; ++i) {
     try {
       const file = difference[i];
       const directoryPath = path.join(__dirname, file + ".html");
       const html = fs.readFileSync(directoryPath);
       const dom = new JSDOM(html);
-      //   const content = dom.window.document.querySelector(
-      //     "div.main_content_area"
-      //   );
-      //   const id = content.querySelector("h2")?.textContent?.split(":")[1];
-      //   console.log("id", id);
-      //   const table = dom.window.document.querySelector("table");
-      //   const tds = Array.from(table.querySelectorAll("table tr"));
-      //   const data = tds.map((td) =>
-      //     td.textContent
-      //       .trim()
-      //       .split(":")
-      //       .map((v) => v.trim())
-      //   );
-      //   console.log("data", data);
-      await writeToJsonCGC(id, data);
+      const tds = Array.from(dom.window.document.querySelectorAll("dl"));
+      const data = tds.map((td) =>
+        td.textContent
+          .trim()
+          .split("\n")
+          .map((v) => v.trim())
+      );
+      console.log("data", data);
+      await writeToJsonCGC(data[0][1], data);
     } catch (error) {
       console.log("fatal error", error.message);
     }

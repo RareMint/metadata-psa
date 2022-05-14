@@ -87,20 +87,20 @@ const writeToJsonCGC = async (id, data) => {
       const directoryPath = path.join(__dirname, file + ".html");
       const html = fs.readFileSync(directoryPath);
       const dom = new JSDOM(html);
-      //   const content = dom.window.document.querySelector(
-      //     "div.main_content_area"
-      //   );
-      //   const id = content.querySelector("h2")?.textContent?.split(":")[1];
-      //   console.log("id", id);
-      //   const table = dom.window.document.querySelector("table");
-      //   const tds = Array.from(table.querySelectorAll("table tr"));
-      //   const data = tds.map((td) =>
-      //     td.textContent
-      //       .trim()
-      //       .split(":")
-      //       .map((v) => v.trim())
-      //   );
-      //   console.log("data", data);
+      const content = dom.window.document.querySelector(
+        "div.main_content_area"
+      );
+      const id = content.querySelector("h2")?.textContent?.split(":")[1];
+      console.log("id", id);
+      const table = dom.window.document.querySelector("table");
+      const tds = Array.from(table.querySelectorAll("table tr"));
+      const data = tds.map((td) =>
+        td.textContent
+          .trim()
+          .split(":")
+          .map((v) => v.trim())
+      );
+      console.log("data", data);
       await writeToJsonCGC(id, data);
     } catch (error) {
       console.log("fatal error", error.message);

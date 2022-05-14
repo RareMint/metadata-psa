@@ -84,7 +84,7 @@ const getFileList = () => {
       //listing all files using forEach
       files.forEach(function (file) {
         // Do whatever you want to do with the file
-        console.log(file);
+        // console.log(file);
       });
       return resolve(files);
     });
@@ -98,11 +98,11 @@ const getFileList = () => {
     const psaIds = await getPSAIds();
     const jsonFiles = await getFileList();
     const files = jsonFiles.map((f) => f.split(".")[0]);
-    console.log("psaIds", psaIds.length, psaIds);
-    console.log("files", files.length, files);
+    console.log("psaIds", psaIds.length);
+    console.log("files", files.length);
     const difference = _.difference(psaIds, files);
     let i = 0;
-    console.log("Missing files", difference.length, difference);
+    console.log("Missing files", difference.length);
     while (i < difference.length) {
       try {
         const id = difference[i];
@@ -113,9 +113,10 @@ const getFileList = () => {
         console.log("writing", id);
         await writeToJsonPSA(key, data);
         ++i;
-        const wait = Math.random() * 2000 + Math.random() * 2000 + 1000 * 60;
-        console.log("waiting", wait);
-        await sleep(wait);
+        const sleeping =
+          Math.random() * 1000 * 60 + 1000 * 60 * 8 * Math.random();
+        console.log("waiting", sleeping);
+        await sleep(sleeping);
       } catch (error) {
         const sleeping = Math.random() * 1000 * 60 + 1000 * 60 * 7;
         console.log("sleeping", sleeping);

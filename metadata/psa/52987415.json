@@ -1,0 +1,49 @@
+{
+  "description": "",
+  "attributes": [
+    {
+      "trait_type": "Certification Number",
+      "value": "52987415"
+    },
+    {
+      "trait_type": "Label Type",
+      "value": " with fugitive ink technology"
+    },
+    {
+      "trait_type": "Reverse Cert Number/Barcode",
+      "value": "Yes"
+    },
+    {
+      "trait_type": "Year",
+      "value": "2000"
+    },
+    {
+      "trait_type": "Brand",
+      "value": "POKEMON GAME BASE II"
+    },
+    {
+      "trait_type": "Sport",
+      "value": "TCG Cards"
+    },
+    {
+      "trait_type": "Card Number",
+      "value": "4"
+    },
+    {
+      "trait_type": "Player",
+      "value": "CHARIZARD-HOLO"
+    },
+    {
+      "trait_type": "Variety/Pedigree",
+      "value": "BASE II"
+    },
+    {
+      "trait_type": "Grade",
+      "value": "EX-MT 6"
+    },
+    {
+      "trait_type": "Edition",
+      "value": 1
+    }
+  ]
+}

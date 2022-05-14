@@ -72,18 +72,13 @@ const writeToJsonPSA = async (id, data) => {
 
 const getFileList = () => {
   return new Promise((resolve) => {
-    //joining path of directory
     const directoryPath = path.join(__dirname, "./metadata/psa");
-    //passsing directoryPath and callback function
     fs.readdir(directoryPath, function (err, files) {
-      //handling error
       if (err) {
         console.log("Unable to scan directory: " + err);
         return [];
       }
-      //listing all files using forEach
       files.forEach(function (file) {
-        // Do whatever you want to do with the file
         // console.log(file);
       });
       return resolve(files);
@@ -93,8 +88,6 @@ const getFileList = () => {
 
 (async () => {
   try {
-    // const ids = await getPSAIds();
-    // const psaIds = [ids[0], ids[1], ids[2], ids[3]];
     const psaIds = await getPSAIds();
     const jsonFiles = await getFileList();
     const files = jsonFiles.map((f) => f.split(".")[0]);

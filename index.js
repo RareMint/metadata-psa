@@ -45,6 +45,28 @@ const getBreckettFiles = () => {
   });
 };
 
+const getCGCFiles = () => {
+  return new Promise((resolve) => {
+    const directoryPath = path.join(__dirname, "./metadata/CGC");
+    fs.readdir(directoryPath, function (err, files) {
+      if (err) {
+        console.log("Unable to scan directory: " + err);
+        return [];
+      }
+      const data = files.map(function (file) {
+        const data = JSON.parse(
+          fs.readFileSync(directoryPath + "/" + file, "utf8")
+        );
+        return {
+          data,
+          certification_number: file.replace(".json", ""),
+        };
+      });
+      return resolve(data);
+    });
+  });
+};
+
 const getPsaWordGrade = (grade) => {
   switch (grade) {
     case "10": {
@@ -182,9 +204,84 @@ const getBreckettWordGrade = (grade) => {
   }
 };
 
+const getCGCWordGrade = (grade) => {
+  switch (grade) {
+    case "10.0":
+    case "10": {
+      return "Pristine";
+    }
+    case "9.5": {
+      return "Gem Mint";
+    }
+    case "9.0":
+    case "9": {
+      return "Mint";
+    }
+    case "8.5": {
+      return "NM-MT+";
+    }
+    case "8.0":
+    case "8": {
+      return "NM-MT";
+    }
+    case "7.5": {
+      return "NM+";
+    }
+    case "7.0":
+    case "7": {
+      return "NM";
+    }
+    case "6.5": {
+      return "EXMT+";
+    }
+    case "6.0":
+    case "6": {
+      return "EXMT";
+    }
+    case "5.5": {
+      return "EX+";
+    }
+    case "5.0":
+    case "5": {
+      return "EX";
+    }
+    case "4.5": {
+      return "VG-EX+";
+    }
+    case "4.0":
+    case "4": {
+      return "VG-EX";
+    }
+    case "3.5": {
+      return "VG+";
+    }
+    case "3.0":
+    case "3": {
+      return "VG";
+    }
+    case "2.5": {
+      return "GD+";
+    }
+    case "2.0":
+    case "2": {
+      return "GD";
+    }
+    case "1.5": {
+      return "FR";
+    }
+    case "1.0":
+    case "1": {
+      return "PR";
+    }
+    default: {
+      throw new Error("Invalid code");
+    }
+  }
+};
+
 const fixCase = (value) =>
   value
-    .split("-")
+    ?.split("-")
     .join(" ")
     .split(" ")
     .map((word) => {
@@ -316,6 +413,55 @@ const formatBreckett = (values) => {
   return { title, card_id_number: "" };
 };
 
+const formatCGC = (values) => {
+  console.log("values.attributes", values.attributes);
+  const attributes = values.attributes;
+
+  const year = attributes.find((record) => record.trait_type === "Year").value;
+
+  const game = fixCase(
+    attributes.find((record) => record.trait_type === "Game").value
+  );
+
+  const cardSet = fixCase(
+    attributes.find((record) => record.trait_type === "Card Set").value
+  );
+
+  const variant1 = fixCase(
+    attributes.find((record) => record.trait_type === "Variant 1")?.value
+  );
+
+  const cardName = fixCase(
+    attributes.find((record) => record.trait_type === "Card Name").value
+  );
+
+  const cardNumber = attributes.find(
+    (record) => record.trait_type === "Card Number"
+  ).value;
+
+  const grade = attributes.find(
+    (record) => record.trait_type === "Grade"
+  ).value;
+
+  // const pedigree = fixCase(
+  //   attributes.find((record) => record.trait_type === "Pedigree").value
+  // );
+
+  const word_trade = getCGCWordGrade(String(grade));
+
+  const title =
+    `${year} ${game} ${cardSet}${
+      variant1 ? ` ${variant1} ` : ""
+    }${cardName} ${cardNumber} CGC ${grade}`
+      .split("-")
+      .join(" ") +
+    " " +
+    word_trade;
+
+  console.log("title:", title);
+  return { title, card_id_number: "" };
+};
+
 (async () => {
   try {
     const psaFiles = await getPSAFiles();
@@ -345,7 +491,21 @@ const formatBreckett = (values) => {
       if (err) return console.error(err);
       fs.writeFileSync(`./csv/breckett/breckett.csv`, csv);
     });
+
+    const cgcFiles = await getCGCFiles();
+    const cgcCSVData = cgcFiles.map((data) => {
+      const { title, card_id_number } = formatCGC(data.data);
+      return {
+        card_id_number,
+        title,
+        certification_number: data.certification_number,
+      };
+    });
+    jsonexport(cgcCSVData, function (err, csv) {
+      if (err) return console.error(err);
+      fs.writeFileSync(`./csv/cgc/cgc.csv`, csv);
+    });
   } catch (error) {
-    console.log({ error: error.message });
+    console.log({ error: error });
   }
 })();

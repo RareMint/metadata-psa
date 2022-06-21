@@ -23,6 +23,53 @@ const getPSAFiles = () => {
   });
 };
 
+const writeToJsonPSA = async (id, title, data) => {
+  delete data.description;
+  delete data.certification_number;
+  fs.writeFileSync(
+    `./csv/psa/${id}.json`,
+    JSON.stringify(
+      {
+        ...data,
+        title,
+      },
+      null,
+      2
+    )
+  );
+};
+
+const writeToJsonBreckett = async (id, title, data) => {
+  delete data.data.description;
+  delete data.data.certification_number;
+  fs.writeFileSync(
+    `./csv/breckett/${id}.json`,
+    JSON.stringify(
+      {
+        ...data.data,
+        title,
+      },
+      null,
+      2
+    )
+  );
+};
+
+const writeToJsonCGC = async (id, title, data) => {
+  delete data.data.description;
+  fs.writeFileSync(
+    `./csv/cgc/${id}.json`,
+    JSON.stringify(
+      {
+        ...data.data,
+        title,
+      },
+      null,
+      2
+    )
+  );
+};
+
 const getBreckettFiles = () => {
   return new Promise((resolve) => {
     const directoryPath = path.join(__dirname, "./metadata/breckett");
@@ -467,6 +514,7 @@ const formatCGC = (values) => {
     const psaFiles = await getPSAFiles();
     const psaCSVData = psaFiles.map((data) => {
       const { title, card_id_number, certification_number } = formatPSA(data);
+      writeToJsonPSA(certification_number, title, data);
       return {
         card_id_number,
         title,
@@ -481,6 +529,7 @@ const formatCGC = (values) => {
     const breckettFiles = await getBreckettFiles();
     const breckettCSVData = breckettFiles.map((data) => {
       const { title, card_id_number } = formatBreckett(data.data);
+      writeToJsonBreckett(data.certification_number, title, data);
       return {
         card_id_number,
         title,
@@ -495,6 +544,7 @@ const formatCGC = (values) => {
     const cgcFiles = await getCGCFiles();
     const cgcCSVData = cgcFiles.map((data) => {
       const { title, card_id_number } = formatCGC(data.data);
+      writeToJsonCGC(data.certification_number, title, data);
       return {
         card_id_number,
         title,

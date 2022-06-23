@@ -343,7 +343,6 @@ const fixCase = (value) =>
 const formatPSA = (values) => {
   console.log("values.attributes", values.attributes);
   const attributes = values.attributes;
-  let valid = true;
 
   const certification_number = attributes.find(
     (record) => record.trait_type === "Certification Number"
@@ -368,7 +367,7 @@ const formatPSA = (values) => {
   ).value;
   if (!card_number) valid = false;
 
-  const player = attributes
+  let player = attributes
     .find((record) => record.trait_type === "Player")
     .value.split("-")
     .join(" ")
@@ -390,8 +389,6 @@ const formatPSA = (values) => {
 
   if (!player) valid = false;
 
-  const PSA = "PSA";
-
   let grade = attributes
     .find((record) => record.trait_type === "Grade")
     .value?.split(" ");
@@ -400,17 +397,34 @@ const formatPSA = (values) => {
 
   const word_trade = getPsaWordGrade(String(grade));
 
-  [year, brand, variety, card_number];
+  // const title =
+  //   `${year} ${brand} ${variety} ${card_number} ${player} ${PSA} ${grade}`
+  //     .split("-")
+  //     .join(" ") +
+  //   " " +
+  //   word_trade;
 
-  const title =
-    `${year} ${brand} ${variety} ${card_number} ${player} ${PSA} ${grade}`
-      .split("-")
-      .join(" ") +
-    " " +
-    word_trade;
+  const title1 = `${year} ${brand} ${variety} PSA ${grade}`
+    .split("-")
+    .join(" ");
 
-  console.log("title:", title);
-  return { title, card_id_number: card_number, certification_number };
+  const title2 = `${year} ${brand} PSA ${grade}`.split("-").join(" ");
+
+  const title3 = `${year} ${variety} PSA ${grade}`.split("-").join(" ");
+
+  player = player.split("-").join(" ");
+
+  console.log("title:", title1);
+  console.log("title:", title2);
+  console.log("title:", title3);
+  return {
+    title1,
+    title2,
+    title3,
+    card_id_number: card_number,
+    certification_number,
+    player,
+  };
 };
 
 const formatBreckett = (values) => {
@@ -451,10 +465,14 @@ const formatBreckett = (values) => {
 
   const word_trade = getBreckettWordGrade(String(finalGrade));
 
-  const title =
-    `${setName} ${playerName} BGS ${finalGrade}`.split("-").join(" ") +
-    " " +
-    word_trade;
+  // const title =
+  //   `${setName} ${playerName} BGS ${finalGrade}`.split("-").join(" ") +
+  //   " " +
+  //   word_trade;
+
+  const title = `${playerName} ${setName} BGS ${finalGrade}`
+    .split("-")
+    .join(" ");
 
   console.log("title:", title);
   return { title, card_id_number: "" };
@@ -496,14 +514,20 @@ const formatCGC = (values) => {
 
   const word_trade = getCGCWordGrade(String(grade));
 
-  const title =
-    `${year} ${game} ${cardSet}${
-      variant1 ? ` ${variant1} ` : ""
-    }${cardName} ${cardNumber} CGC ${grade}`
-      .split("-")
-      .join(" ") +
-    " " +
-    word_trade;
+  // const title =
+  //   `${year} ${game} ${cardSet}${
+  //     variant1 ? ` ${variant1} ` : ""
+  //   }${cardName} ${cardNumber} CGC ${grade}`
+  //     .split("-")
+  //     .join(" ") +
+  //   " " +
+  //   word_trade;
+
+  const title = `${
+    variant1 ? `${variant1} ` : ""
+  }${cardName} ${year} ${game} ${cardSet} CGC ${grade}`
+    .split("-")
+    .join(" ");
 
   console.log("title:", title);
   return { title, card_id_number: "" };
@@ -513,12 +537,15 @@ const formatCGC = (values) => {
   try {
     const psaFiles = await getPSAFiles();
     const psaCSVData = psaFiles.map((data) => {
-      const { title, card_id_number, certification_number } = formatPSA(data);
-      writeToJsonPSA(certification_number, title, data);
+      const { title1, title2, title3, player, certification_number } =
+        formatPSA(data);
+      // writeToJsonPSA(certification_number, title1, data);
       return {
-        card_id_number,
-        title,
         certification_number,
+        player,
+        title1,
+        title2,
+        title3,
       };
     });
     jsonexport(psaCSVData, function (err, csv) {
@@ -528,12 +555,11 @@ const formatCGC = (values) => {
 
     const breckettFiles = await getBreckettFiles();
     const breckettCSVData = breckettFiles.map((data) => {
-      const { title, card_id_number } = formatBreckett(data.data);
+      const { title } = formatBreckett(data.data);
       writeToJsonBreckett(data.certification_number, title, data);
       return {
-        card_id_number,
-        title,
         certification_number: data.certification_number,
+        title,
       };
     });
     jsonexport(breckettCSVData, function (err, csv) {
@@ -546,9 +572,8 @@ const formatCGC = (values) => {
       const { title, card_id_number } = formatCGC(data.data);
       writeToJsonCGC(data.certification_number, title, data);
       return {
-        card_id_number,
-        title,
         certification_number: data.certification_number,
+        title,
       };
     });
     jsonexport(cgcCSVData, function (err, csv) {

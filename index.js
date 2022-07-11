@@ -27,7 +27,7 @@ const writeToJsonPSA = async (id, title, data) => {
   delete data.description;
   delete data.certification_number;
   fs.writeFileSync(
-    `./csv/psa/${id}.json`,
+    `./final-pokemon-drop/json/psa/${id}.json`,
     JSON.stringify(
       {
         ...data,
@@ -43,7 +43,7 @@ const writeToJsonBreckett = async (id, title, data) => {
   delete data.data.description;
   delete data.data.certification_number;
   fs.writeFileSync(
-    `./csv/breckett/${id}.json`,
+    `./final-pokemon-drop/json/breckett/${id}.json`,
     JSON.stringify(
       {
         ...data.data,
@@ -58,7 +58,7 @@ const writeToJsonBreckett = async (id, title, data) => {
 const writeToJsonCGC = async (id, title, data) => {
   delete data.data.description;
   fs.writeFileSync(
-    `./csv/cgc/${id}.json`,
+    `./final-pokemon-drop/json/cgc/${id}.json`,
     JSON.stringify(
       {
         ...data.data,
@@ -341,7 +341,7 @@ const fixCase = (value) =>
     .join(" ");
 
 const formatPSA = (values) => {
-  console.log("values.attributes", values.attributes);
+  // console.log("values.attributes", values.attributes);
   const attributes = values.attributes;
 
   const certification_number = attributes.find(
@@ -397,31 +397,65 @@ const formatPSA = (values) => {
 
   const word_trade = getPsaWordGrade(String(grade));
 
+  // Special cases
+
+  let tempBrand = brand.split("-").join(" ").split(" ");
+  let tempVariety = variety.split("-").join(" ").split(" ");
+  let brandVariety = _.uniq([...tempBrand, ...tempVariety]).join(" ");
+  console.log({ brandVariety });
+  //
+
+  // let title = [year, brand, variety, card_number, player, "PSA", grade]
+  //   .map((w) => w.trim())
+  //   .split("-")
+  //   .join(" ");
+
+  let title = [year, brandVariety, card_number, player, "PSA", grade].map((w) =>
+    w.trim().replace("-", " ")
+  );
+
+  title.push(word_trade);
+  title = title
+    .join(" ")
+    .split(" ")
+    .filter((w) => w)
+    .join(" ");
+  // if (certification_number === "52986812") {
+  //   console.log(title);
+  //   console.log({
+  //     year,
+  //     brand,
+  //     variety,
+  //     card_number,
+  //     player,
+  //     grade,
+  //     word_trade,
+  //   });
+  // }
+  title = title.replace(" OF ", " Of ");
+  title = title.replace(".foil", ".Foil");
   // const title =
-  //   `${year} ${brand} ${variety} ${card_number} ${player} ${PSA} ${grade}`
+  //   `${year} ${brand} ${variety} ${card_number} ${player} PSA ${grade}`
   //     .split("-")
   //     .join(" ") +
   //   " " +
   //   word_trade;
 
-  const title1 = `${year} ${brand} ${variety} PSA ${grade}`
-    .split("-")
-    .join(" ");
+  // const title1 = `${year} ${brand} ${variety} PSA ${grade}`
+  //   .split("-")
+  //   .join(" ");
 
-  const title2 = `${year} ${brand} PSA ${grade}`.split("-").join(" ");
+  // const title2 = `${year} ${brand} PSA ${grade}`.split("-").join(" ");
 
-  const title3 = `${year} ${variety} PSA ${grade}`.split("-").join(" ");
+  // const title3 = `${year} ${variety} PSA ${grade}`.split("-").join(" ");
 
-  player = player.split("-").join(" ");
+  // player = player.split("-").join(" ");
 
-  console.log("title:", title1);
-  console.log("title:", title2);
-  console.log("title:", title3);
+  // console.log("title:", title1);
+  // console.log("title:", title2);
+  // console.log("title:", title3);
   return {
-    title1,
-    title2,
-    title3,
-    card_id_number: card_number,
+    title,
     certification_number,
     player,
   };
@@ -465,16 +499,16 @@ const formatBreckett = (values) => {
 
   const word_trade = getBreckettWordGrade(String(finalGrade));
 
-  // const title =
-  //   `${setName} ${playerName} BGS ${finalGrade}`.split("-").join(" ") +
-  //   " " +
-  //   word_trade;
+  const title =
+    `${setName} ${playerName} BGS ${finalGrade}`.split("-").join(" ") +
+    " " +
+    word_trade;
 
-  const title = `${playerName} ${setName} BGS ${finalGrade}`
-    .split("-")
-    .join(" ");
+  // const title = `${playerName} ${setName} BGS ${finalGrade}`
+  //   .split("-")
+  //   .join(" ");
 
-  console.log("title:", title);
+  // console.log("title:", title);
   return { title, card_id_number: "" };
 };
 
@@ -514,6 +548,21 @@ const formatCGC = (values) => {
 
   const word_trade = getCGCWordGrade(String(grade));
 
+  let title = [
+    year,
+    game,
+    cardSet,
+    variant1,
+    cardName,
+    cardNumber,
+    "CGC",
+    grade,
+    word_trade,
+  ]
+    .filter((w) => w)
+    .map((w) => w.trim())
+    .join(" ");
+
   // const title =
   //   `${year} ${game} ${cardSet}${
   //     variant1 ? ` ${variant1} ` : ""
@@ -523,34 +572,49 @@ const formatCGC = (values) => {
   //   " " +
   //   word_trade;
 
-  const title = `${
-    variant1 ? `${variant1} ` : ""
-  }${cardName} ${year} ${game} ${cardSet} CGC ${grade}`
-    .split("-")
-    .join(" ");
+  // const title = `${
+  //   variant1 ? `${variant1} ` : ""
+  // }${cardName} ${year} ${game} ${cardSet} CGC ${grade}`
+  //   .split("-")
+  //   .join(" ");
 
-  console.log("title:", title);
+  // console.log("title:", title);
   return { title, card_id_number: "" };
 };
 
 (async () => {
   try {
-    const psaFiles = await getPSAFiles();
+    const exclude = [
+      "52987415",
+      "63150425",
+      "63150431",
+      "63150444",
+      "63150448",
+    ];
+    let psaFiles = await getPSAFiles();
+    psaFiles.filter((data) => {
+      if (
+        data.attributes.find(
+          (attr) =>
+            attr["trait_type"] === "Certification Number" &&
+            !_.includes(exclude, attr["value"])
+        )
+      ) {
+        //console.log(data);
+        return true;
+      }
+    });
     const psaCSVData = psaFiles.map((data) => {
-      const { title1, title2, title3, player, certification_number } =
-        formatPSA(data);
-      // writeToJsonPSA(certification_number, title1, data);
+      const { title, certification_number } = formatPSA(data);
+      writeToJsonPSA(certification_number, title, data);
       return {
         certification_number,
-        player,
-        title1,
-        title2,
-        title3,
+        title,
       };
     });
     jsonexport(psaCSVData, function (err, csv) {
       if (err) return console.error(err);
-      fs.writeFileSync(`./csv/psa/psa.csv`, csv);
+      fs.writeFileSync(`./final-pokemon-drop/csv/psa/psa.csv`, csv);
     });
 
     const breckettFiles = await getBreckettFiles();
@@ -564,12 +628,12 @@ const formatCGC = (values) => {
     });
     jsonexport(breckettCSVData, function (err, csv) {
       if (err) return console.error(err);
-      fs.writeFileSync(`./csv/breckett/breckett.csv`, csv);
+      fs.writeFileSync(`./final-pokemon-drop/csv/breckett/breckett.csv`, csv);
     });
 
     const cgcFiles = await getCGCFiles();
     const cgcCSVData = cgcFiles.map((data) => {
-      const { title, card_id_number } = formatCGC(data.data);
+      const { title } = formatCGC(data.data);
       writeToJsonCGC(data.certification_number, title, data);
       return {
         certification_number: data.certification_number,
@@ -578,7 +642,7 @@ const formatCGC = (values) => {
     });
     jsonexport(cgcCSVData, function (err, csv) {
       if (err) return console.error(err);
-      fs.writeFileSync(`./csv/cgc/cgc.csv`, csv);
+      fs.writeFileSync(`./final-pokemon-drop/csv/cgc/cgc.csv`, csv);
     });
   } catch (error) {
     console.log({ error: error });

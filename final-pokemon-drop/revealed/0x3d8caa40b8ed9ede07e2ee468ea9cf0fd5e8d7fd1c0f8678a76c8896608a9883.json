@@ -1,0 +1,70 @@
+{
+  "animation_url": "TODO_ANIMATION",
+  "name": "2002 Pokemon Expedition 39 Charizard Rev.Foil PSA 8 NM-MT (0x3d8c...9883)",
+  "revealed": true,
+  "image": "TODO_IMAGE",
+  "drop": {
+    "name": "Pokemon Genesis Mystery Pack",
+    "id": "0001"
+  },
+  "attributes": [
+    {
+      "value": "Revealed"
+    },
+    {
+      "trait_type": "Certification Number",
+      "value": "41438169"
+    },
+    {
+      "trait_type": "Label Type",
+      "value": " with fugitive ink technology"
+    },
+    {
+      "trait_type": "Reverse Cert Number/Barcode",
+      "value": "Yes"
+    },
+    {
+      "trait_type": "Year",
+      "value": "2002"
+    },
+    {
+      "trait_type": "Brand",
+      "value": "POKEMON EXPEDITION"
+    },
+    {
+      "trait_type": "Sport",
+      "value": "TCG Cards"
+    },
+    {
+      "trait_type": "Card Number",
+      "value": "39"
+    },
+    {
+      "trait_type": "Player",
+      "value": "CHARIZARD-REV.FOIL"
+    },
+    {
+      "trait_type": "Variety/Pedigree",
+      "value": ""
+    },
+    {
+      "trait_type": "Grade",
+      "value": "NM-MT 8"
+    },
+    {
+      "trait_type": "PSA Price Guide Value",
+      "value": "$400"
+    },
+    {
+      "trait_type": "Edition",
+      "value": 1
+    }
+  ],
+  "proof_of_integrity": {
+    "proof_contract": "0x7bE9deF730f7b46b680d33ba2fEc1D1bA2C53f23",
+    "hex_proof": "0x3d8caa40b8ed9ede07e2ee468ea9cf0fd5e8d7fd1c0f8678a76c8896608a9883",
+    "salt": 251923654587,
+    "fingerprint": "2002 Pokemon Expedition 39 Charizard Rev.Foil PSA 8 NM-MT 251923654587"
+  },
+  "description": "RareMint Pokemon Genesis Mystery Pack (0x3d8caa40b8ed9ede07e2ee468ea9cf0fd5e8d7fd1c0f8678a76c8896608a9883) derived from the human readeable fingerprint of the physical item - which will be revealed at the same time as the NFT itself - using the Keccak256 cryptographic function. This unique identifier serves as a verifiable *Proof of Integrity* to certify that the corresponding physical asset is irrevocably associated to this NFT and vice-versa."
+}

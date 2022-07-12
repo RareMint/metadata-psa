@@ -1,0 +1,74 @@
+{
+  "animation_url": "TODO_ANIMATION",
+  "name": "2009 Pokemon Japanese Promo Advent Of Arceus 043 Pikachu M Lv.x Holo PSA 10 Gem Mint (0x51d6...7438)",
+  "revealed": true,
+  "image": "TODO_IMAGE",
+  "drop": {
+    "name": "Pokemon Genesis Mystery Pack",
+    "id": "0001"
+  },
+  "attributes": [
+    {
+      "value": "Revealed"
+    },
+    {
+      "trait_type": "Certification Number",
+      "value": "26110919"
+    },
+    {
+      "trait_type": "Label Type",
+      "value": " \nHologram\n*"
+    },
+    {
+      "trait_type": "Reverse Cert Number/Barcode",
+      "value": "Yes"
+    },
+    {
+      "trait_type": "Year",
+      "value": "2009"
+    },
+    {
+      "trait_type": "Brand",
+      "value": "POKEMON JAPANESE PROMO"
+    },
+    {
+      "trait_type": "Sport",
+      "value": "TCG Cards"
+    },
+    {
+      "trait_type": "Card Number",
+      "value": "043"
+    },
+    {
+      "trait_type": "Player",
+      "value": "PIKACHU M LV.X-HOLO"
+    },
+    {
+      "trait_type": "Variety/Pedigree",
+      "value": "ADVENT OF ARCEUS"
+    },
+    {
+      "trait_type": "Grade",
+      "value": "GEM MT 10"
+    },
+    {
+      "trait_type": "Date",
+      "value": "Price"
+    },
+    {
+      "trait_type": "4/28/2021",
+      "value": "$900.00"
+    },
+    {
+      "trait_type": "Edition",
+      "value": 1
+    }
+  ],
+  "proof_of_integrity": {
+    "proof_contract": "0x7bE9deF730f7b46b680d33ba2fEc1D1bA2C53f23",
+    "hex_proof": "0x51d6543072ae4345fe58a3c8e1ec2007578476e17c6acc0b3b3786b063c57438",
+    "salt": 924457489308,
+    "fingerprint": "2009 Pokemon Japanese Promo Advent Of Arceus 043 Pikachu M Lv.x Holo PSA 10 Gem Mint 924457489308"
+  },
+  "description": "RareMint Pokemon Genesis Mystery Pack (0x51d6543072ae4345fe58a3c8e1ec2007578476e17c6acc0b3b3786b063c57438) derived from the human readeable fingerprint of the physical item - which will be revealed at the same time as the NFT itself - using the Keccak256 cryptographic function. This unique identifier serves as a verifiable *Proof of Integrity* to certify that the corresponding physical asset is irrevocably associated to this NFT and vice-versa."
+}

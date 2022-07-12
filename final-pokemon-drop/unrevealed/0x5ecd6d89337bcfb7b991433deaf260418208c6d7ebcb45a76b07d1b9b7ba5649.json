@@ -1,0 +1,17 @@
+{
+  "animation_url": "TODO_ANIMATION",
+  "name": "1999 Pokemon Game 1st Edition 4 Charizard Holo PSA 9 Mint (0x5ecd...5649)",
+  "revealed": false,
+  "image": "TODO_IMAGE",
+  "drop": {
+    "name": "Pokemon Genesis Mystery Pack",
+    "id": "001"
+  },
+  "attributes": [
+    {
+      "value": "Unrevealed"
+    }
+  ],
+  "proof_of_integrity": "0x5ecd6d89337bcfb7b991433deaf260418208c6d7ebcb45a76b07d1b9b7ba5649",
+  "description": "RareMint Pokemon Genesis Mystery Pack (0x5ecd6d89337bcfb7b991433deaf260418208c6d7ebcb45a76b07d1b9b7ba5649) derived from the human readeable fingerprint of the physical item - which will be revealed at the same time as the NFT itself - using the Keccak256 cryptographic function. This unique identifier serves as a verifiable *Proof of Integrity* to certify that the corresponding physical asset is irrevocably associated to this NFT and vice-versa."
+}

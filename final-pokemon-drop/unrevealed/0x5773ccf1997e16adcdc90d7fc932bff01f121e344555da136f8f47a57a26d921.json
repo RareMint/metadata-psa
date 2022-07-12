@@ -1,0 +1,17 @@
+{
+  "animation_url": "TODO_ANIMATION",
+  "name": "2002 Pokemon Legendary Collection 37 Charmeleon Rev.Foil PSA 10 Gem Mint (0x5773...d921)",
+  "revealed": false,
+  "image": "TODO_IMAGE",
+  "drop": {
+    "name": "Pokemon Genesis Mystery Pack",
+    "id": "001"
+  },
+  "attributes": [
+    {
+      "value": "Unrevealed"
+    }
+  ],
+  "proof_of_integrity": "0x5773ccf1997e16adcdc90d7fc932bff01f121e344555da136f8f47a57a26d921",
+  "description": "RareMint Pokemon Genesis Mystery Pack (0x5773ccf1997e16adcdc90d7fc932bff01f121e344555da136f8f47a57a26d921) derived from the human readeable fingerprint of the physical item - which will be revealed at the same time as the NFT itself - using the Keccak256 cryptographic function. This unique identifier serves as a verifiable *Proof of Integrity* to certify that the corresponding physical asset is irrevocably associated to this NFT and vice-versa."
+}

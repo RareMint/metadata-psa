@@ -5,8 +5,14 @@
   "repository": "git@github.com:ruge0326/metadata-psa.git",
   "author": "RuGe <70239531+ruge0326@users.noreply.github.com>",
   "license": "MIT",
+  "scripts": {
+    "drop": "env-cmd -f .env node index.js",
+    "ether": "env-cmd -f .env node index.js"
+  },
   "dependencies": {
     "axios": "^0.27.2",
+    "env-cmd": "^10.1.0",
+    "ethers": "^5.6.9",
     "jsdom": "^19.0.0",
     "jsonexport": "^3.2.0",
     "lodash": "^4.17.21",

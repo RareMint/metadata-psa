@@ -1,0 +1,17 @@
+{
+  "animation_url": "TODO_ANIMATION",
+  "name": "2009 Pokemon Japanese Promo Advent Of Arceus 043 Pikachu M Lv.x Holo PSA 10 Gem Mint (0xa7a8...dd68)",
+  "revealed": false,
+  "image": "TODO_IMAGE",
+  "drop": {
+    "name": "Pokemon Genesis Mystery Pack",
+    "id": "001"
+  },
+  "attributes": [
+    {
+      "value": "Unrevealed"
+    }
+  ],
+  "proof_of_integrity": "0xa7a891a42beff13df13293688780c39ec7642b8b20a57b7c5251a6c74443dd68",
+  "description": "RareMint Pokemon Genesis Mystery Pack (0xa7a891a42beff13df13293688780c39ec7642b8b20a57b7c5251a6c74443dd68) derived from the human readeable fingerprint of the physical item - which will be revealed at the same time as the NFT itself - using the Keccak256 cryptographic function. This unique identifier serves as a verifiable *Proof of Integrity* to certify that the corresponding physical asset is irrevocably associated to this NFT and vice-versa."
+}

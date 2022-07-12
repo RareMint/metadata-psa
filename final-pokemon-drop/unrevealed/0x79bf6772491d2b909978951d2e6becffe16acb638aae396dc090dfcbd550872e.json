@@ -1,0 +1,17 @@
+{
+  "animation_url": "TODO_ANIMATION",
+  "name": "1999 Pokemon Fossil 1st Edition 8 Hypno Holo PSA 9 Mint (0x79bf...872e)",
+  "revealed": false,
+  "image": "TODO_IMAGE",
+  "drop": {
+    "name": "Pokemon Genesis Mystery Pack",
+    "id": "001"
+  },
+  "attributes": [
+    {
+      "value": "Unrevealed"
+    }
+  ],
+  "proof_of_integrity": "0x79bf6772491d2b909978951d2e6becffe16acb638aae396dc090dfcbd550872e",
+  "description": "RareMint Pokemon Genesis Mystery Pack (0x79bf6772491d2b909978951d2e6becffe16acb638aae396dc090dfcbd550872e) derived from the human readeable fingerprint of the physical item - which will be revealed at the same time as the NFT itself - using the Keccak256 cryptographic function. This unique identifier serves as a verifiable *Proof of Integrity* to certify that the corresponding physical asset is irrevocably associated to this NFT and vice-versa."
+}

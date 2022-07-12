@@ -3,6 +3,10 @@ const path = require("path");
 const _ = require("lodash");
 const { startCase, camelCase } = require("lodash");
 const jsonexport = require("jsonexport");
+const crypto = require("crypto");
+const { generateProof, contract_address } = require("./etherjs");
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const getPSAFiles = () => {
   return new Promise((resolve) => {
@@ -63,6 +67,32 @@ const writeToJsonCGC = async (id, title, data) => {
       {
         ...data.data,
         title,
+      },
+      null,
+      2
+    )
+  );
+};
+
+const writeUnrevealedMetadaToJson = async (proof, data) => {
+  fs.writeFileSync(
+    `./final-pokemon-drop/unrevealed/${proof}.json`,
+    JSON.stringify(
+      {
+        ...data,
+      },
+      null,
+      2
+    )
+  );
+};
+
+const writeRevealedMetadaToJson = async (proof, data) => {
+  fs.writeFileSync(
+    `./final-pokemon-drop/revealed/${proof}.json`,
+    JSON.stringify(
+      {
+        ...data,
       },
       null,
       2
@@ -402,7 +432,7 @@ const formatPSA = (values) => {
   let tempBrand = brand.split("-").join(" ").split(" ");
   let tempVariety = variety.split("-").join(" ").split(" ");
   let brandVariety = _.uniq([...tempBrand, ...tempVariety]).join(" ");
-  console.log({ brandVariety });
+  // console.log({ brandVariety });
   //
 
   // let title = [year, brand, variety, card_number, player, "PSA", grade]
@@ -462,7 +492,7 @@ const formatPSA = (values) => {
 };
 
 const formatBreckett = (values) => {
-  console.log("values.attributes", values.attributes);
+  // console.log("values.attributes", values.attributes);
   const attributes = values.attributes;
   let valid = true;
 
@@ -513,7 +543,7 @@ const formatBreckett = (values) => {
 };
 
 const formatCGC = (values) => {
-  console.log("values.attributes", values.attributes);
+  // console.log("values.attributes", values.attributes);
   const attributes = values.attributes;
 
   const year = attributes.find((record) => record.trait_type === "Year").value;
@@ -582,6 +612,78 @@ const formatCGC = (values) => {
   return { title, card_id_number: "" };
 };
 
+const callProofOfIntegrity = async ({ title, salt }) => {
+  return generateProof({ title, salt });
+  // return "0x80850944170bD73D0908A57BE7AD1A2c32c78ab1";
+};
+
+const getMaskedProof = (proof) => {
+  const size = proof.length;
+  const start = proof.slice(0, 6);
+  const end = proof.slice(size - 4);
+  return start + "..." + end;
+};
+
+const getUnrevealedMetadata = ({
+  animation_url,
+  title,
+  proof,
+  masked_proof,
+  image,
+}) => {
+  return {
+    animation_url,
+    name: title + " " + `(${masked_proof})`,
+    revealed: false,
+    image,
+    drop: {
+      name: "Pokemon Genesis Mystery Pack",
+      id: "001",
+    },
+    attributes: [
+      {
+        value: "Unrevealed",
+      },
+    ],
+    proof_of_integrity: proof,
+    description: `RareMint Pokemon Genesis Mystery Pack (${proof}) derived from the human readeable fingerprint of the physical item - which will be revealed at the same time as the NFT itself - using the Keccak256 cryptographic function. This unique identifier serves as a verifiable *Proof of Integrity* to certify that the corresponding physical asset is irrevocably associated to this NFT and vice-versa.`,
+  };
+};
+
+const getRevealedMetadata = ({
+  title,
+  salt,
+  proof,
+  image,
+  masked_proof,
+  animation_url,
+  attributes,
+}) => {
+  return {
+    animation_url,
+    name: title + " " + `(${masked_proof})`,
+    revealed: true,
+    image,
+    drop: {
+      name: "Pokemon Genesis Mystery Pack",
+      id: "0001",
+    },
+    attributes: [
+      {
+        value: "Revealed",
+      },
+      ...attributes,
+    ],
+    proof_of_integrity: {
+      proof_contract: contract_address,
+      hex_proof: proof,
+      salt,
+      fingerprint: title + " " + salt,
+    },
+    description: `RareMint Pokemon Genesis Mystery Pack (${proof}) derived from the human readeable fingerprint of the physical item - which will be revealed at the same time as the NFT itself - using the Keccak256 cryptographic function. This unique identifier serves as a verifiable *Proof of Integrity* to certify that the corresponding physical asset is irrevocably associated to this NFT and vice-versa.`,
+  };
+};
+
 (async () => {
   try {
     const exclude = [
@@ -592,7 +694,7 @@ const formatCGC = (values) => {
       "63150448",
     ];
     let psaFiles = await getPSAFiles();
-    psaFiles.filter((data) => {
+    psaFiles = psaFiles.filter((data) => {
       if (
         data.attributes.find(
           (attr) =>
@@ -600,9 +702,10 @@ const formatCGC = (values) => {
             !_.includes(exclude, attr["value"])
         )
       ) {
-        //console.log(data);
         return true;
       }
+      // console.log(data);
+      return false;
     });
     const psaCSVData = psaFiles.map((data) => {
       const { title, certification_number } = formatPSA(data);
@@ -610,8 +713,57 @@ const formatCGC = (values) => {
       return {
         certification_number,
         title,
+        attributes: data.attributes,
       };
     });
+    const salts = [];
+    const contract_salts = psaCSVData.map((data) => {
+      const salt = crypto.randomInt(100000000000, 999999999999);
+      salts.push(salt);
+      return {
+        salt: salt,
+        size: String(salt).length,
+        title: data.title,
+        attributes: data.attributes,
+      };
+    });
+    // console.log("input", salts.length, "salts", _.uniq(salts).length);
+    for (let i = 0; i < contract_salts.length; ++i) {
+      const salt = contract_salts[i].salt;
+      const title = contract_salts[i].title;
+      const attributes = contract_salts[i].attributes;
+      const smartcontract_proof = await callProofOfIntegrity({ salt, title });
+      const masked_smartcontract_proof = getMaskedProof(smartcontract_proof);
+      console.dir({
+        salt,
+        title,
+        smartcontract_proof,
+        masked_smartcontract_proof,
+      });
+
+      const unrevealed_metadata = getUnrevealedMetadata({
+        title,
+        proof: smartcontract_proof,
+        masked_proof: masked_smartcontract_proof,
+        image: "TODO_IMAGE",
+        animation_url: "TODO_ANIMATION",
+      });
+      const revealed_metadata = getRevealedMetadata({
+        title,
+        salt,
+        proof: smartcontract_proof,
+        masked_proof: masked_smartcontract_proof,
+        attributes,
+        image: "TODO_IMAGE",
+        animation_url: "TODO_ANIMATION",
+      });
+      await writeUnrevealedMetadaToJson(
+        smartcontract_proof,
+        unrevealed_metadata
+      );
+      await writeRevealedMetadaToJson(smartcontract_proof, revealed_metadata);
+      await sleep(1000 + crypto.randomInt(1000, 2000));
+    }
     jsonexport(psaCSVData, function (err, csv) {
       if (err) return console.error(err);
       fs.writeFileSync(`./final-pokemon-drop/csv/psa/psa.csv`, csv);

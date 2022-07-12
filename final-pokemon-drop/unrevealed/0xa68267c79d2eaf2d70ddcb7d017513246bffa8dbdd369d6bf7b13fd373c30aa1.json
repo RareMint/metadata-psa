@@ -1,0 +1,17 @@
+{
+  "animation_url": "TODO_ANIMATION",
+  "name": "2018 Pokemon Japanese SM Promo Munch A Retrospective 286 Psyduck PSA 9 Mint (0xa682...0aa1)",
+  "revealed": false,
+  "image": "TODO_IMAGE",
+  "drop": {
+    "name": "Pokemon Genesis Mystery Pack",
+    "id": "001"
+  },
+  "attributes": [
+    {
+      "value": "Unrevealed"
+    }
+  ],
+  "proof_of_integrity": "0xa68267c79d2eaf2d70ddcb7d017513246bffa8dbdd369d6bf7b13fd373c30aa1",
+  "description": "RareMint Pokemon Genesis Mystery Pack (0xa68267c79d2eaf2d70ddcb7d017513246bffa8dbdd369d6bf7b13fd373c30aa1) derived from the human readeable fingerprint of the physical item - which will be revealed at the same time as the NFT itself - using the Keccak256 cryptographic function. This unique identifier serves as a verifiable *Proof of Integrity* to certify that the corresponding physical asset is irrevocably associated to this NFT and vice-versa."
+}

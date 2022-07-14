@@ -1,0 +1,69 @@
+{
+  "animation_url": "https://media.raremint.com/pokemon_genesis/56490608.mp4",
+  "name": "2020 Pokemon Swsh Black Star Promo Chmpn Path Elite Trnr Box 050 Charizard V PSA 10 Gem Mint (0x9dd2...6e1b)",
+  "revealed": true,
+  "image": "https://media.raremint.com/pokemon_genesis/56490608.jpg",
+  "drop": {
+    "name": "Pokemon Genesis Mystery Pack",
+    "id": "0001"
+  },
+  "attributes": [
+    {
+      "value": "Revealed"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Ultra Rare"
+    },
+    {
+      "display_type": "number",
+      "trait_type": "Edition",
+      "max_value": 1,
+      "value": 1
+    },
+    {
+      "display_type": "date",
+      "trait_type": "Digital Asset Creation Date",
+      "value": 1657764222591
+    },
+    {
+      "trait_type": "Asset Backed",
+      "value": "Yes"
+    },
+    {
+      "trait_type": "Category",
+      "value": "TCG"
+    },
+    {
+      "trait_type": "Team",
+      "value": "Pokemon"
+    },
+    {
+      "trait_type": "Type",
+      "value": "Card"
+    },
+    {
+      "trait_type": "Authenticator",
+      "value": "PSA"
+    },
+    {
+      "trait_type": "Subject",
+      "value": "CHARIZARD V"
+    },
+    {
+      "trait_type": "Grade",
+      "value": "GEM MT 10"
+    },
+    {
+      "trait_type": "Authentication Type",
+      "value": "56490608"
+    }
+  ],
+  "proof_of_integrity": {
+    "proof_contract": "0x7bE9deF730f7b46b680d33ba2fEc1D1bA2C53f23",
+    "hex_proof": "0x9dd2c195ebd5fc44b6ae319fe2431ee42f125d3264134d06a41fceb2243c6e1b",
+    "salt": 893933331816,
+    "fingerprint": "2020 Pokemon Swsh Black Star Promo Chmpn Path Elite Trnr Box 050 Charizard V PSA 10 Gem Mint"
+  },
+  "description": "RareMint Pokemon Card NFT Mystery Pack. Cards are graded by PSA, BGS, or CGC. The NFT can be redeemed anytime for the physical asset stored in our secure and insured vault. The 1 of 1 NFT contained in this sealed pack is backed by the physical asset in the RareMint Vault. The card was randomly assigned at mint time, along with a unique identifier (0x9dd2c195ebd5fc44b6ae319fe2431ee42f125d3264134d06a41fceb2243c6e1b) derived from a fingerprint of the physical asset, which will be revealed at the same time as the NFT itself."
+}

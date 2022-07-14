@@ -1,10 +1,89 @@
-certification_number,title
-3844273037,2002 Pokemon Theater Limited VS Pack Holo Alto Mares Latios 012/018 CGC 8 NM-MT
-4024281007,2002 Pokemon Legendary Collection Reverse Holo Pikachu 86/110 CGC 9.5 Gem Mint
-4028221010,2022 Pokemon Brilliant Stars Galarian Moltres V 183/172 CGC 9 Mint
-4028221012,2021 Pokemon Chilling Reign Galarian Articuno V 169/198 CGC 9.5 Gem Mint
-4028221013,2021 Pokemon Chilling Reign Galarian Moltres V 176/198 CGC 9 Mint
-4028221021,2022 Pokemon Battle Region Hisuian Samurott V 078/067 CGC 9.5 Gem Mint
-4028221025,2021 Pokemon Evolving Skies Umbreon Vmax 214/203 CGC 8.5 NM-MT+
-4028221034,2021 Pokemon Evolving Skies Leafeon V 166/203 CGC 9.5 Gem Mint
-4028221042,2019 Pokemon Unbroken Bonds Reshiram & Charizard GX 194/214 CGC 9 Mint
+certification_number,title,attributes.trait_type,attributes.value
+3844273037,2002 Pokemon Theater Limited VS Pack Holo Alto Mares Latios 012/018 CGC 8 NM-MT,Cert #,3844273037
+,,Card Name,Alto Mare's Latios
+,,Game,Pokémon
+,,Year,2002
+,,Language,Japanese
+,,Card Set,Theater Limited VS Pack
+,,Card Number,012/018
+,,Variant 1,Holo
+,,Grade,8
+,,Centering,9
+,,Surface,8
+,,Corners,8
+,,Edges,9
+,,Edition,1
+4024281007,2002 Pokemon Legendary Collection Reverse Holo Pikachu 86/110 CGC 9.5 Gem Mint,Cert #,4024281007
+,,Card Name,Pikachu
+,,Game,Pokémon
+,,Year,2002
+,,Language,English
+,,Card Set,Legendary Collection
+,,Card Number,86/110
+,,Variant 1,Reverse Holo
+,,Grade,9.5
+,,Pedigree,Blake Martinez Break 3/12/22
+,,Edition,1
+4028221010,2022 Pokemon Brilliant Stars Galarian Moltres V 183/172 CGC 9 Mint,Cert #,4028221010
+,,Card Name,Galarian Moltres V
+,,Game,Pokémon
+,,Year,2022
+,,Language,English
+,,Card Set,Brilliant Stars
+,,Card Number,183/172
+,,Grade,9
+,,Edition,1
+4028221012,2021 Pokemon Chilling Reign Galarian Articuno V 169/198 CGC 9.5 Gem Mint,Cert #,4028221012
+,,Card Name,Galarian Articuno V
+,,Game,Pokémon
+,,Year,2021
+,,Language,English
+,,Card Set,Chilling Reign
+,,Card Number,169/198
+,,Grade,9.5
+,,Edition,1
+4028221013,2021 Pokemon Chilling Reign Galarian Moltres V 176/198 CGC 9 Mint,Cert #,4028221013
+,,Card Name,Galarian Moltres V
+,,Game,Pokémon
+,,Year,2021
+,,Language,English
+,,Card Set,Chilling Reign
+,,Card Number,176/198
+,,Grade,9
+,,Edition,1
+4028221021,2022 Pokemon Battle Region Hisuian Samurott V 078/067 CGC 9.5 Gem Mint,Cert #,4028221021
+,,Card Name,Hisuian Samurott V
+,,Game,Pokémon
+,,Year,2022
+,,Language,Japanese
+,,Card Set,Battle Region
+,,Card Number,078/067
+,,Grade,9.5
+,,Edition,1
+4028221025,2021 Pokemon Evolving Skies Umbreon Vmax 214/203 CGC 8.5 NM-MT+,Cert #,4028221025
+,,Card Name,Umbreon VMAX
+,,Game,Pokémon
+,,Year,2021
+,,Language,English
+,,Card Set,Evolving Skies
+,,Card Number,214/203
+,,Grade,8.5
+,,Edition,1
+4028221034,2021 Pokemon Evolving Skies Leafeon V 166/203 CGC 9.5 Gem Mint,Cert #,4028221034
+,,Card Name,Leafeon V
+,,Game,Pokémon
+,,Year,2021
+,,Language,English
+,,Card Set,Evolving Skies
+,,Card Number,166/203
+,,Grade,9.5
+,,Edition,1
+4028221042,2019 Pokemon Unbroken Bonds Reshiram & Charizard GX 194/214 CGC 9 Mint,Cert #,4028221042
+,,Card Name,Reshiram & Charizard GX
+,,Game,Pokémon
+,,Year,2019
+,,Language,English
+,,Card Set,Unbroken Bonds
+,,Card Number,194/214
+,,Grade,9
+,,Edition,1

@@ -1,0 +1,65 @@
+{
+  "animation_url": "https://media.raremint.com/pokemon_genesis/4028221042.mp4",
+  "name": "2019 Pokemon Unbroken Bonds Reshiram & Charizard GX 194/214 CGC 9 Mint (0xe526...2a16)",
+  "revealed": true,
+  "image": "https://media.raremint.com/pokemon_genesis/4028221042.jpg",
+  "drop": {
+    "name": "Pokemon Genesis Mystery Pack",
+    "id": "0001"
+  },
+  "attributes": [
+    {
+      "value": "Revealed"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Ultra Rare"
+    },
+    {
+      "display_type": "number",
+      "trait_type": "Edition",
+      "max_value": 1,
+      "value": 1
+    },
+    {
+      "display_type": "date",
+      "trait_type": "Digital Asset Creation Date",
+      "value": 1657765034614
+    },
+    {
+      "trait_type": "Asset Backed",
+      "value": "Yes"
+    },
+    {
+      "trait_type": "Category",
+      "value": "TCG"
+    },
+    {
+      "trait_type": "Team",
+      "value": "Pokemon"
+    },
+    {
+      "trait_type": "Type",
+      "value": "Card"
+    },
+    {
+      "trait_type": "Authenticator",
+      "value": "CGC"
+    },
+    {
+      "trait_type": "Subject",
+      "value": "Reshiram & Charizard GX"
+    },
+    {
+      "trait_type": "Grade",
+      "value": "9"
+    }
+  ],
+  "proof_of_integrity": {
+    "proof_contract": "0x7bE9deF730f7b46b680d33ba2fEc1D1bA2C53f23",
+    "hex_proof": "0xe526dfc832eac80c6d36d4af93f1cde0bc9523b67c8c734e4207d104ee622a16",
+    "salt": 989992961046,
+    "fingerprint": "2019 Pokemon Unbroken Bonds Reshiram & Charizard GX 194/214 CGC 9 Mint"
+  },
+  "description": "RareMint Pokemon Card NFT Mystery Pack. Cards are graded by PSA, BGS, or CGC. The NFT can be redeemed anytime for the physical asset stored in our secure and insured vault. The 1 of 1 NFT contained in this sealed pack is backed by the physical asset in the RareMint Vault. The card was randomly assigned at mint time, along with a unique identifier (0xe526dfc832eac80c6d36d4af93f1cde0bc9523b67c8c734e4207d104ee622a16) derived from a fingerprint of the physical asset, which will be revealed at the same time as the NFT itself."
+}

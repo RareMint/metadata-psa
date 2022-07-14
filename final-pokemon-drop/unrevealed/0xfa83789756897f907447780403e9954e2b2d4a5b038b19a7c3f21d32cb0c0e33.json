@@ -1,0 +1,17 @@
+{
+  "animation_url": "https://media.raremint.com/pokemon_genesis_unrevealed/pokemon-genesis-pack-unrevealed.mp4",
+  "name": "Pokemon Genesis Mystery Pack (0xfa83...0e33)",
+  "revealed": false,
+  "image": "https://media.raremint.com/pokemon_genesis_unrevealed/pokemon-genesis-pack-unrevealed.jpg",
+  "drop": {
+    "name": "Pokemon Genesis Mystery Pack",
+    "id": "001"
+  },
+  "attributes": [
+    {
+      "value": "Unrevealed"
+    }
+  ],
+  "proof_of_integrity": "0xfa83789756897f907447780403e9954e2b2d4a5b038b19a7c3f21d32cb0c0e33",
+  "description": "RareMint Pokemon Card NFT Mystery Pack. Cards are graded by PSA, BGS, or CGC. The NFT can be redeemed anytime for the physical asset stored in our secure and insured vault. The 1 of 1 NFT contained in this sealed pack is backed by the physical asset in the RareMint Vault. The card was randomly assigned at mint time, along with a unique identifier (0xfa83789756897f907447780403e9954e2b2d4a5b038b19a7c3f21d32cb0c0e33) derived from a fingerprint of the physical asset, which will be revealed at the same time as the NFT itself."
+}

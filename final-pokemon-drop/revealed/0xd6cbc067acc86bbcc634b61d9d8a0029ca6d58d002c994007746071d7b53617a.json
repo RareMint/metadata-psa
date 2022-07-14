@@ -1,0 +1,65 @@
+{
+  "animation_url": "https://media.raremint.com/pokemon_genesis/4028221012.mp4",
+  "name": "2021 Pokemon Chilling Reign Galarian Articuno V 169/198 CGC 9.5 Gem Mint (0xd6cb...617a)",
+  "revealed": true,
+  "image": "https://media.raremint.com/pokemon_genesis/4028221012.jpg",
+  "drop": {
+    "name": "Pokemon Genesis Mystery Pack",
+    "id": "0001"
+  },
+  "attributes": [
+    {
+      "value": "Revealed"
+    },
+    {
+      "trait_type": "Tier",
+      "value": "Ultra Rare"
+    },
+    {
+      "display_type": "number",
+      "trait_type": "Edition",
+      "max_value": 1,
+      "value": 1
+    },
+    {
+      "display_type": "date",
+      "trait_type": "Digital Asset Creation Date",
+      "value": 1657765016748
+    },
+    {
+      "trait_type": "Asset Backed",
+      "value": "Yes"
+    },
+    {
+      "trait_type": "Category",
+      "value": "TCG"
+    },
+    {
+      "trait_type": "Team",
+      "value": "Pokemon"
+    },
+    {
+      "trait_type": "Type",
+      "value": "Card"
+    },
+    {
+      "trait_type": "Authenticator",
+      "value": "CGC"
+    },
+    {
+      "trait_type": "Subject",
+      "value": "Galarian Articuno V"
+    },
+    {
+      "trait_type": "Grade",
+      "value": "9.5"
+    }
+  ],
+  "proof_of_integrity": {
+    "proof_contract": "0x7bE9deF730f7b46b680d33ba2fEc1D1bA2C53f23",
+    "hex_proof": "0xd6cbc067acc86bbcc634b61d9d8a0029ca6d58d002c994007746071d7b53617a",
+    "salt": 521272152018,
+    "fingerprint": "2021 Pokemon Chilling Reign Galarian Articuno V 169/198 CGC 9.5 Gem Mint"
+  },
+  "description": "RareMint Pokemon Card NFT Mystery Pack. Cards are graded by PSA, BGS, or CGC. The NFT can be redeemed anytime for the physical asset stored in our secure and insured vault. The 1 of 1 NFT contained in this sealed pack is backed by the physical asset in the RareMint Vault. The card was randomly assigned at mint time, along with a unique identifier (0xd6cbc067acc86bbcc634b61d9d8a0029ca6d58d002c994007746071d7b53617a) derived from a fingerprint of the physical asset, which will be revealed at the same time as the NFT itself."
+}

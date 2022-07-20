@@ -1,6 +1,12 @@
-# Proof - Generete revealed and unrevealed files
+# Proof - Please check env file
+
+// Generate Generete revealed and unrevealed files
 
 yarn drop
+
+// insert metadata into db
+
+yarn insert-metadata
 
 # metadata-psa
 

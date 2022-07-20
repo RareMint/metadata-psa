@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "drop": "env-cmd -f .env node index.js",
-    "ether": "env-cmd -f .env node index.js"
+    "insert-metadata": "env-cmd -f .env node db.js"
   },
   "dependencies": {
     "axios": "^0.27.2",

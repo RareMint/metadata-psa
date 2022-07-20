@@ -1,3 +1,7 @@
+# Proof - Generete revealed and unrevealed files
+
+yarn drop
+
 # metadata-psa
 
 Metadata PSA

@@ -7,24 +7,24 @@ const pool = new Pool({
   user: "raremint-dev",
   host: "34.171.133.30",
   database: "raremint-dev",
-  password: "67a4DzXEoMsC36zTSNPNeyrc7",
+  password: process.env.DB_PASSWORD, //
   port: "5432",
   sslmode: false,
 });
 
-// const hash =
-//   "0x8e6f46f1a888a2af0bc8c96816a1c58cc6277b1b6f7de5be5df088c0cc99091a";
-// pool.query(
-//   `SELECT * from revealed_metadata where token_hash = '${hash}'`,
-//   (err, res) => {
-//     console.log({ err });
-//     // check if the response is not 'undefined'
-//     if (res !== undefined) {
-//       // log the response to console
-//       console.log("Postgres response:", res.rows[0]);
-//     }
-//   }
-// );
+const hash =
+  "0x8e6f46f1a888a2af0bc8c96816a1c58cc6277b1b6f7de5be5df088c0cc99091a";
+pool.query(
+  `SELECT * from revealed_metadata where token_hash = '${hash}'`,
+  (err, res) => {
+    console.log({ err });
+    // check if the response is not 'undefined'
+    if (res !== undefined) {
+      // log the response to console
+      console.log("Postgres response:", res.rows[0]);
+    }
+  }
+);
 
 pool.query(
   `SELECT table_name
